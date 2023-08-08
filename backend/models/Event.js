@@ -13,12 +13,16 @@ const eventSchema = new mongoose.Schema({
     type: String,
     required: true,
   },
-  date: {
+  start: {
     type: Date,
     required: true,
   },
+  end: {
+    type: Date,
+    required: false,
+  },
   createdBy: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Number,
     ref: 'User',
     required: true,
   },

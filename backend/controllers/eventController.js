@@ -23,6 +23,8 @@ exports.getEventById = async (req, res) => {
   }
 };
 
+const AutoIncrement = require('../models/AutoIncrement');
+
 // Get the next sequence number
 const getNextSequence = async (name) => {
   const result = await AutoIncrement.findOneAndUpdate(
@@ -42,7 +44,7 @@ exports.createEvent = async (req, res) => {
     const newEvent = await Event.create({ _id: id, ...req.body });
     res.status(201).json(newEvent);
   } catch (error) {
-    res.status(500).json({ error: 'Error creating event' });
+    res.status(500).json({ error: 'Error creating event', message: error.message  });
   }
 };
 
@@ -55,7 +57,7 @@ exports.updateEvent = async (req, res) => {
     }
     res.status(200).json(updatedEvent);
   } catch (error) {
-    res.status(500).json({ error: 'Error updating event' });
+    res.status(500).json({ error: 'Error updating event', message: error.message });
   }
 };
 
@@ -64,7 +66,7 @@ exports.deleteEvent = async (req, res) => {
   try {
     const deletedEvent = await Event.findByIdAndDelete(req.params.id);
     if (!deletedEvent) {
-      return res.status(404).json({ error: 'Event not found' });
+      return res.status(404).json({ error: 'Event not found', message: error.message });
     }
     res.status(200).json({ message: 'Event deleted successfully' });
   } catch (error) {

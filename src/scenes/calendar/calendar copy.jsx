@@ -17,7 +17,6 @@ const Calendar = () => {
     const response = await fetch("http://localhost:3000/api/events");
     const data = await response.json();
     setCurrentEvents(data);
-    console.log(currentEvents);
   };
 
   useEffect(() => {
@@ -29,11 +28,8 @@ const Calendar = () => {
     const description = prompt("Please enter a description for your event");
     const calendarApi = selected.view.calendar;
     calendarApi.unselect();
-    console.log(selected);
+
     if (title) {
-      const endDate = new Date(selected.endStr);
-      endDate.setDate(endDate.getDate() - 1);
-  
       const response = await fetch("http://localhost:3000/api/events", {
         method: "POST",
         headers: {
@@ -42,72 +38,48 @@ const Calendar = () => {
         body: JSON.stringify({
           title,
           description,
-          start: selected.startStr,
-          end: endDate.toISOString(),
+          date: selected.startStr,
           createdBy: 1,
         })
       });
-      
-      fetchEvents();
 
-      // const newEvent = await response.json();
+      const newEvent = await response.json();
 
-      // calendarApi.addEvent({
-      //   id: newEvent._id,
-      //   title: newEvent.title,
-      //   start: newEvent.date,
-      //   end: selected.endStr,
-      //   allDay: selected.allDay,
-      // });
-      
+      calendarApi.addEvent({
+        id: newEvent._id,
+        title: newEvent.title,
+        start: newEvent.date,
+        end: selected.endStr,
+        allDay: selected.allDay,
+      });
     }
   };
 
   const handleEventClick = async (selected) => {
-    const eventId = selected.event.extendedProps._id;
     if (
       window.confirm(
         `Are you sure you want to delete the event '${selected.event.title}'`
       )
     ) {
-      await fetch(`http://localhost:3000/api/events/${eventId}`, {
+      await fetch(`http://localhost:3000/api/events/${selected.event.extendedProps._id}`, {
         method: "DELETE"
       });
-      setCurrentEvents(currentEvents.filter(event => event._id !== eventId));
       selected.event.remove();
     }
   };
 
-const handleEventDrop = async (info) => {
-  const response = await fetch(`http://localhost:3000/api/events/${info.event.extendedProps._id}`, {
-    method: "PUT",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      start: info.event.start.toISOString(),
-      end: info.event.end ? info.event.end.toISOString() : null,
-    })
-  });
-
-  if (response.ok) {
-    // If the server update is successful, update the local state
-    setCurrentEvents(currentEvents.map(event => {
-      if (event._id === info.event.extendedProps._id) {
-        
-        return {
-          ...event,
-          start: info.event.start.toISOString(),
-          end: info.event.end ? info.event.end.toISOString() : null,
-        };
-      }
-      return event;
-    }));
-  } else {
-    console.error('Failed to update event');
-  }
-};
-
+  const handleEventDrop = async (info) => {
+    await fetch(`http://localhost:3000/api/events/${info.event.extendedProps._id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        date: info.event.start.toISOString(),
+      })
+    });
+    fetchEvents();
+  };
 
   return (
     <Box m="20px">
@@ -135,7 +107,7 @@ const handleEventDrop = async (info) => {
                   primary={event.title}
                   secondary={
                     <Typography>
-                      {formatDate(event.start, {
+                      {formatDate(event.date, {
                         year: "numeric",
                         month: "short",
                         day: "numeric",
@@ -173,7 +145,6 @@ const handleEventDrop = async (info) => {
             select={handleDateClick}
             eventClick={handleEventClick}
             eventDrop={handleEventDrop}
-            eventResize={handleEventDrop}
             events={currentEvents}
             eventTimeFormat={{ // this will format events time in 12H format
               hour: 'numeric',

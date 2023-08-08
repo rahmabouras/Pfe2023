@@ -44,7 +44,7 @@ exports.createProject = async (req, res) => {
     const newProject = await Project.create({ _id: id, ...req.body });
     res.status(201).json(newProject);
   } catch (error) {
-    res.status(500).json({ error: 'Error creating project' });
+    res.status(500).json({ error: 'Error creating project', message: error.message  });
   }
 };
 

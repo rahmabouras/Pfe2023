@@ -2,13 +2,28 @@ import React, { useEffect, useState } from "react";
 import { Box, Button, TextField, useTheme, MenuItem } from "@mui/material";
 import { Formik } from "formik";
 import { tokens } from "../../theme";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import axios from 'axios';
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
 
-const AddProject = () => {
+const EditProject = () => {
+  const { id } = useParams(); // <-- get the customer ID from the URL
+  const [initialValues, setInitialValues] = useState({
+
+      projectName: "",
+      customer: "",
+      manager: "",
+      startDate: "",
+      dueDate: "",
+      overallProgress: "",  // revised from 'overallProgress'
+      projectValue: "",     // revised from 'projectValue'
+      status: "",
+      bic: "",       // added this field since it's used in the form
+
+  });
+
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
@@ -17,6 +32,26 @@ const AddProject = () => {
   const navigate = useNavigate();
 
 
+  useEffect(() => {
+    axios.get(`http://localhost:3000/api/projects/${id}`)
+      .then(response => {
+        const project = response.data;
+        setInitialValues({
+          projectName: project.projectName,
+          customer: project.customer._id,
+          manager: project.manager._id,
+          startDate: project.startDate.slice(0, 10),
+          dueDate: project.dueDate.slice(0, 10) ,
+          overallProgress: project.overallProgress,  
+          projectValue: project.projectValue,     
+          status: project.status, 
+          bic: project.bic,      
+        });
+      })
+      .catch(error => {
+        console.error(`There was an error retrieving the customer: ${error}`);
+      });
+  }, [id]); // <-- run this useEffect when the `id` changes
 
 
 
@@ -63,12 +98,13 @@ const AddProject = () => {
 
   return (
     <Box m="20px">
-      <Header title="CREATE PROJECT" subtitle="Create a New Project" />
+      <Header title="EDIT PROJECT" subtitle="Update Existing Project" />
 
       <Formik
         onSubmit={handleFormSubmit}
         initialValues={initialValues}
         validationSchema={checkoutSchema}
+        enableReinitialize
       >
         {({
           values,
@@ -251,7 +287,7 @@ const AddProject = () => {
               margin: "5px",
             }}
             disabled={isSubmitting}>
-              Create New Project
+              Update Project
             </Button>
             </Box>
           </form>
@@ -274,18 +310,7 @@ const checkoutSchema = yup.object().shape({
 });
 
 
-const initialValues = {
-      projectName: "",
-      customer: "",
-      manager: "",
-      startDate: "",
-      dueDate: "",
-      overallProgress: "",  // revised from 'overallProgress'
-      projectValue: "",     // revised from 'projectValue'
-      status: "",
-      bic: "",       // added this field since it's used in the form
-
-};
 
 
-export default AddProject;
+
+export default EditProject;

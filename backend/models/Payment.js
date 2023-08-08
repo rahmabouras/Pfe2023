@@ -22,7 +22,7 @@ const paymentSchema = new mongoose.Schema({
     required: true
   },
   project: {
-    type: mongoose.Schema.Types.ObjectId,
+    type: Number,
     ref: 'Project',
     required: true
   }

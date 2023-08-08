@@ -5,7 +5,11 @@ const userSchema = new mongoose.Schema({
     type: Number,
     required: true,
   },
-  name: {
+  firstName: {
+    type: String,
+    required: true
+  },
+  lastName: {
     type: String,
     required: true
   },
@@ -23,7 +27,7 @@ const userSchema = new mongoose.Schema({
   },
   role: {
     type: String,
-    enum: ['admin', 'manager', 'employee'],
+    enum: ['admin', 'manager', 'finance', 'employee'],
     required: true
   }
 });

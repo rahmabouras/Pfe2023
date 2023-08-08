@@ -1,44 +1,101 @@
-import React from "react";
-import { Box, Button, useTheme } from "@mui/material";
-import { DataGrid } from "@mui/x-data-grid";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { Box, Button, useTheme, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from "@mui/material";
+import { DataGrid, GridToolbar } from "@mui/x-data-grid";
 import { tokens } from "../../theme";
 import { Link } from "react-router-dom";
 import Header from "../../components/Header";
-import { mockDataContacts } from "../../data/mockData";
+import IconButton from '@mui/material/IconButton';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const Project = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
+
+  const navigate = useNavigate();
+  const handleEditClick = (id) => {
+    navigate(`/project/${id}`);
+  };
+  const [projects, setProjects] = useState([]);
+  const [open, setOpen] = useState(false);
+  const [selectedId, setSelectedId] = useState(null);
+
+  useEffect(() => {
+    axios.get('http://localhost:3000/api/projects')
+      .then(response => {
+        const newProjects = response.data.map(project => ({
+          ...project,
+          name: `${project.firstName} ${project.lastName}`,
+          customer: `${project.customer.firstName} ${project.customer.lastName}`,
+          manager: `${project.manager.firstName} ${project.manager.lastName}`,
+          startDate: project.startDate.slice(0, 10),
+          dueDate: project.dueDate.slice(0, 10)
+        }));
+        console.log(newProjects);
+        setProjects(newProjects);
+      })
+      .catch(error => console.error(`There was an error retrieving the projects: ${error}`));
+  }, []);
+  
+
+  const handleClickOpen = (id) => {
+    setOpen(true);
+    setSelectedId(id);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleDelete = () => {
+    axios.delete(`http://localhost:3000/api/projects/${selectedId}`)
+      .then(res => {
+        console.log(res);
+        console.log(res.data);
+        
+        setProjects(projects.filter((project) => project._id !== selectedId));  // removing the deleted project
+      });
+    setOpen(false);
+  };
+
+
   const columns = [
-    { field: "id", headerName: "ID" },
+    { field: "_id", headerName: "ID", flex: 0.5 },
     {
-      field: "name",
+      field: "projectName",
       headerName: "Project Name",
       flex: 1,
       cellClassName: "name-column--cell",
     },
     {
-      field: "customer",
-      headerName: "Customer",
+      field: "bic",
+      headerName: "BIC",
       flex: 1,
     },
     {
-      field: "startdate",
+      field: "customer",
+      headerName: "Customer Name",
+      flex: 1,
+    },
+    {
+      field: "manager",
+      headerName: "Manager Name",
+      flex: 1,
+    },
+    {
+      field: "startDate",
       headerName: "Start Date",
       flex: 1,
     },
     {
-      field: "duedate",
+      field: "dueDate",
       headerName: "Due Date",
       flex: 1,
     },
     {
-      field: "overallprogress",
-      headerName: "Overall Progress",
-      flex: 1,
-    },
-    {
-      field: "projectvalue",
+      field: "projectValue",
       headerName: "Project Value",
       flex: 1,
     },
@@ -48,9 +105,28 @@ const Project = () => {
       flex: 1,
     },
     {
+      field: "overallProgress",
+      headerName: "Overall Progress",
+      flex: 1,
+    },
+    {
       field: "action",
       headerName: "Action",
-      flex: 1,
+      sortable: false,
+      width: 100,
+      disableClickEventBubbling: true,
+      renderCell: (params) => {
+        return (
+          <div>
+            <IconButton aria-label="edit" onClick={() => { handleEditClick(params.row._id) }}>
+              <EditIcon />
+            </IconButton>
+            <IconButton aria-label="delete" onClick={() => { handleClickOpen(params.row._id) }}>
+              <DeleteIcon />
+            </IconButton>
+          </div>
+        );
+      }
     },
 
   ];
@@ -85,6 +161,9 @@ const Project = () => {
           "& .MuiCheckbox-root": {
             color: `${colors.greenAccent[200]} !important`,
           },
+          "& .MuiDataGrid-toolbarContainer .MuiButton-text": {
+            color: `${colors.grey[100]} !important`,
+          },
         }}
       >
         {/* Add Project Button */}
@@ -105,7 +184,38 @@ const Project = () => {
         </Box>
 
         {/* DataGrid */}
-        <DataGrid checkboxSelection rows={mockDataContacts} columns={columns} />
+        <DataGrid
+          rows={projects}
+          columns={columns}
+          getRowId={(row) => row._id}
+          components={{ Toolbar: GridToolbar }}
+        />
+        <Dialog open={open} onClose={handleClose} aria-labelledby="alert-dialog-title" aria-describedby="alert-dialog-description">
+          <DialogTitle id="alert-dialog-title">{"Are you sure you want to delete this item?"}</DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              You will not be able to recover this item after deletion.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose}             
+            sx={{
+              color: colors.grey[100],
+              fontSize: "14px",
+              padding: "10px 20px",
+            }}>
+              No
+            </Button>
+            <Button onClick={handleDelete}             
+            sx={{
+              color: colors.grey[100],
+              fontSize: "14px",
+              padding: "10px 20px",
+            }} autoFocus>
+              Yes
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
     </Box>
   );

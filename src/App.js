@@ -6,6 +6,8 @@ import Dashboard from "./scenes/dashboard";
 import Team from "./scenes/team";
 import Invoices from "./scenes/invoices";
 import Contacts from "./scenes/contacts";
+import AddContact from "./scenes/contacts/AddContact";
+import EditContact from "./scenes/contacts/EditContact";
 import Bar from "./scenes/bar";
 import Form from "./scenes/form";
 import Line from "./scenes/line";
@@ -22,12 +24,11 @@ import Calendar from "./scenes/calendar/calendar";
 import AddProject from "./scenes/project/AddProject";
 import EditCustomer from "./scenes/customer/EditCustomer";
 import EditVendor from "./scenes/vendor/EditVendor";
-import AddContact from "./scenes/contacts/AddContact";
-import EditContact from "./scenes/contacts/EditContact";
+import EditProject from "./scenes/project/EditProject";
 import Payment from "./scenes/payment";
 import AddPayment from "./scenes/payment/AddPayment";
 import EditPayement from "./scenes/payment/EditPayment";
-
+import SignIn from "./scenes/login";
 // import Home from "./scenes/home";
 
 function App() {
@@ -44,7 +45,8 @@ function App() {
             <Topbar setIsSidebar={setIsSidebar} />
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/team" element={<Team />} />
+              <Route path="/login" element={<SignIn />} />
+              <Route path="/users" element={<Team />} />
               <Route path="/contacts" element={<Contacts />} />
               <Route path="/invoices" element={<Invoices />} />
               <Route path="/form" element={<Form />} />
@@ -53,7 +55,6 @@ function App() {
               <Route path="/line" element={<Line />} />
               <Route path="/calendar" element={<Calendar />} />
               <Route path="/geography" element={<Geography />} />
-              <Route path="/vendor" element={<Vendor />} />
               <Route path="/customer" element={<Customer />} />
               <Route path="/addcustomer" element={<AddCustomer />} />
               <Route path="/customer/:id" element={<EditCustomer />} />
@@ -68,10 +69,13 @@ function App() {
               <Route path="/vendor" element={<Vendor />} />
               <Route path="/addvendor" element={<AddVendor />} />
               <Route path="/vendor/:id" element={<EditVendor />} />
-              <Route path="/projects" element={<Project />} />
+
+              <Route path="/project" element={<Project />} />
               <Route path="/addproject" element={<AddProject />} />
+              <Route path="/project/:id" element={<EditProject />} />
               <Route path="/form4" element={<Geography />} />
               {/* <Route path="/home" element={<Home />} /> */}
+            
             </Routes>
           </main>
         </div>

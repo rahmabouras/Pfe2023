@@ -106,7 +106,7 @@ const Payment = () => {
 
   return (
     <Box m="20px">
-      <Header title="paymentS" subtitle="Managing of payment" />
+      <Header title="PAYMENTS" subtitle="Managing of payment" />
       <Box
         m="40px 0 0 0"
         height="75vh"
