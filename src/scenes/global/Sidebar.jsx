@@ -130,7 +130,7 @@ const Sidebar = () => {
 <Typography variant="h6" color={colors.grey[300]} sx={{ m: "15px 0 5px 20px" }}>
   Projects
 </Typography>
-<Item title="Project" to="/project" icon={<ReceiptOutlinedIcon />} selected={selected} setSelected={setSelected} />
+<Item title="Project" to="/projects" icon={<ReceiptOutlinedIcon />} selected={selected} setSelected={setSelected} />
 <Item title="Kanban Board" to="/kanban" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} />
 <Item title="Gantt Diagrams" to="/gantt" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} />
 <Item title="Manage Users" to="/users" icon={<PeopleOutlinedIcon />} selected={selected} setSelected={setSelected} />

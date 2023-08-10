@@ -29,6 +29,9 @@ import Payment from "./scenes/payment";
 import AddPayment from "./scenes/payment/AddPayment";
 import EditPayement from "./scenes/payment/EditPayment";
 import SignIn from "./scenes/login";
+import Chat from "./scenes/chat/Chat";
+import AddUser from "./scenes/team/AddUser";
+import EditUser from "./scenes/team/EditUser";
 // import Home from "./scenes/home";
 
 function App() {
@@ -45,8 +48,11 @@ function App() {
             <Topbar setIsSidebar={setIsSidebar} />
             <Routes>
               <Route path="/" element={<Dashboard />} />
+              <Route path="/chat" element={<Chat />} />
               <Route path="/login" element={<SignIn />} />
               <Route path="/users" element={<Team />} />
+              <Route path="/adduser" element={<AddUser />} />
+              <Route path="/user/:id" element={<EditUser />} />
               <Route path="/contacts" element={<Contacts />} />
               <Route path="/invoices" element={<Invoices />} />
               <Route path="/form" element={<Form />} />
@@ -70,7 +76,7 @@ function App() {
               <Route path="/addvendor" element={<AddVendor />} />
               <Route path="/vendor/:id" element={<EditVendor />} />
 
-              <Route path="/project" element={<Project />} />
+              <Route path="/projects" element={<Project />} />
               <Route path="/addproject" element={<AddProject />} />
               <Route path="/project/:id" element={<EditProject />} />
               <Route path="/form4" element={<Geography />} />
