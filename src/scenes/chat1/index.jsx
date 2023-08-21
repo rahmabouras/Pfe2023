@@ -29,21 +29,36 @@ import {AutoDraft} from "@chatscope/use-chat/dist/enums/AutoDraft";
 
 const Chat1 = () => {
     const [users, setUsers] = useState([]);
-
+    const { id } = useParams(); // Get the user ID from the route
+    const currentUserIndex = parseInt(id);
     useEffect(() => {
         // Fetch users from the backend
         axios.get('http://localhost:3000/api/users')
             .then(response => {
-                setUsers(response.data.map(user => ({
+                // Map the response data to the desired structure
+                const mappedUsers = response.data.map(user => ({
+                    id: user._id,
                     name: user.firstName,
                     avatar: user.avatar
-                })));
-                console.log(response.data);
+                }));
+    
+                // Find the index of the user with the ID matching currentUserIndex
+                const currentUserIndexInArray = mappedUsers.findIndex(user => user.id === currentUserIndex);
+    
+                // If the user is found, move them to the beginning of the array
+                if (currentUserIndexInArray !== -1) {
+                    const currentUser = mappedUsers.splice(currentUserIndexInArray, 1)[0];
+                    mappedUsers.unshift(currentUser);
+                }
+    
+                setUsers(mappedUsers);
+                console.log(mappedUsers);
             })
             .catch(error => {
                 console.error("An error occurred while fetching user data:", error);
             });
     }, []);
+    
 
     const messageIdGenerator = (message) => nanoid();
     const groupIdGenerator = () => nanoid();
@@ -52,6 +67,7 @@ const Chat1 = () => {
     const serviceFactory = (storage, updateState) => new ExampleChatService(storage, updateState);
 
     const chatUsers = users.map((user, index) => new User({
+        i: user.id,
         id: user.name,
         presence: new Presence({ status: UserStatus.Available, description: "" }),
         firstName: "",
@@ -123,8 +139,6 @@ const Chat1 = () => {
         });
     
     });
-        
-    
     
     return (
         <Box height="92%">
