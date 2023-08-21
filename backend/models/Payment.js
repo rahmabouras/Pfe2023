@@ -9,11 +9,21 @@ const paymentSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
-  fromto: {
-    type: mongoose.Schema.Types.Mixed,
-    required: true
+  customer: {
+    type: Number,
+    ref: 'Customer',
+    required: false
+  },
+  vendor: {
+    type: Number,
+    ref: 'Vendor',
+    required: false
   },
   amount: {
+    type: Number,
+    required: true
+  },
+  cashin: {
     type: Number,
     required: true
   },

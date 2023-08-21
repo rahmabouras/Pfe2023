@@ -1,32 +1,59 @@
-import { useEffect, useState } from 'react';
-import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Button, TextField, useTheme,MenuItem } from "@mui/material";
+import { useEffect, useState } from 'react';
+import { Box, Button, TextField, useTheme,MenuItem, FormControl,Select} from "@mui/material";
+import { RadioGroup, FormControlLabel, Radio } from "@mui/material";
+
 import { Formik } from "formik";
 import { tokens } from "../../theme";
-import { Link, useNavigate } from "react-router-dom"; // <-- import useNavigate
+import { Link, useNavigate,useParams } from "react-router-dom"; // <-- import useNavigate
 import * as yup from "yup";
 import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
 
 const EditPayment = () => {
-  const { id } = useParams(); // <-- get the customer ID from the URL
-  const [initialValues, setInitialValues] = useState({
-    firstName: "",
-    lastName: "",
-    email: "",
-    phoneNumber: "",
-    address: "",
-  });
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
-  const navigate = useNavigate(); // <-- get navigate function
-
+  const navigate = useNavigate(); 
+  const [selectedOption, setSelectedOption] = useState('cashin');
+  const [selectedValue, setSelectedValue] = useState('');
   const [projects, setProjects] = useState([]);
+  const [customers, setCustomers] = useState([]);
+  const [vendors,setVendors]=useState([]);
+  const { id } = useParams(); // <-- get the customer ID from the URL
+  const [initialValues, setInitialValues] = useState({
+
+      date: "",
+      customer: "", // Include the fromto field
+      vendor: "", // Include the fromto field
+      amount: "",
+      description: "",
+      project: "", // Use the first project's _id as default
+    });
+  
+  
+
+  useEffect(() => {
+    axios.get(`http://localhost:3000/api/Payments/${id}`)
+      .then(response => {
+        const payment = response.data;
+        setInitialValues({
+          date:payment.date,
+          customer:payment.customer, // Include the fromto field
+          vendor:payment.vendor, // Include the fromto field
+          amount:payment.amount,
+          cashin:payment.cashin,
+          description:payment.description,
+          project:payment.project,      
+        });
+      })
+      .catch(error => {
+        console.error(`There was an error retrieving the customer: ${error}`);
+      });
+  }, [id]); // <-- run this useEffect when the `id` changes
 
 
- 
+
   useEffect(() => {
     // Fetch projects
     const getProjects = async () => {
@@ -38,51 +65,65 @@ const EditPayment = () => {
       }
     };
     getProjects();
-   
-  }, []);
   
+  }, []);
 
 
-  // Call the API to get the customer details when the component is first loaded
   useEffect(() => {
-    axios.get(`http://localhost:3000/api/payments/${id}`)
-      .then(response => {
-        const customer = response.data;
-        setInitialValues({
-          firstName: customer.firstName,
-          lastName: customer.lastName,
-          email: customer.email,
-          phoneNumber: customer.phoneNumber,
-          address: customer.address,
-        });
-      })
-      .catch(error => {
-        console.error(`There was an error retrieving the customer: ${error}`);
-      });
-  }, [id]); // <-- run this useEffect when the `id` changes
+    // Fetch customers and vendors
+    const fetchData = async () => {
+      try {
+        const customersResponse = await axios.get("http://localhost:3000/api/customers");
+        const vendorsResponse = await axios.get("http://localhost:3000/api/vendors");
+        setCustomers(customersResponse.data);
+        setVendors(vendorsResponse.data);
+      } catch (error) {
+        console.error(`Error getting data: ${error}`);
+      }
+    };
+    fetchData();
+  }, []);
+
+//radio button
+const handleOptionChange = (event) => {
+  setSelectedOption(event.target.value);
+  setSelectedValue(''); // Reset the selected value when radio button changes
+};
+
+
+
+
+
 
   const handleFormSubmit = (values, { setSubmitting }) => { 
-    axios.put(`http://localhost:3000/api/payments/${id}`, values) // <-- call the PUT API
+    console.log("Form values:", values); // Debugging line
+    axios.post('http://localhost:3000/api/payments', { ...values, cashin: selectedOption === "cashin" ? 1 : 0 })
       .then(response => {
         console.log(response.data);
-        setSubmitting(false); // stop showing the submitting state in form
-        navigate("/payments"); // navigate to /customer
+        setSubmitting(false);
+        navigate("/payment");
       })
       .catch(error => {
-        console.error(`There was an error updating the payment: ${error}`);
-        setSubmitting(false); // stop showing the submitting state in form
+        console.error(`There was an error creating the payment: ${error}`);
+        setSubmitting(false);
       });
   };
+  
 
   return (
     <Box m="20px">
-      <Header title="EDIT payment" subtitle="Update Existing payment" />
+      <Header title="CREATE payment" subtitle="Create a New payment Profile" />
 
       <Formik
         onSubmit={handleFormSubmit}
-        initialValues={initialValues}
+        initialValues={{
+          ...initialValues,
+          role: '',
+          project: projects.length > 0 ? projects[0]._id : null, // Set default project
+        }}
+       
+
         validationSchema={checkoutSchema}
-        enableReinitialize
       >
         {({
           values,
@@ -102,32 +143,81 @@ const EditPayment = () => {
                 "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
               }}
             >
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="date"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.date}
-                name="date"
-                error={!!touched.date && !!errors.date}
-                helperText={touched.date && errors.date}
-                sx={{ gridColumn: "span 2" }}
-              />
-              <TextField
-                fullWidth
-                variant="filled"
-                type="text"
-                label="fromto"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.fromto}
-                name="fromto"
-                error={!!touched.fromto && !!errors.fromto}
-                helperText={touched.fromto && errors.fromto}
-                sx={{ gridColumn: "span 2" }}
-              />
+
+
+{/* Radio Group for Customer/Vendor */}
+<RadioGroup row value={selectedOption} onChange={handleOptionChange}   sx={{
+
+      display: 'flex  ',
+      gridColumn:"span 2",
+      gridTemplateColumns: 'repeat(2, 1fr)', // Display two columns
+      gridColumnGap: '16px', // Adjust the gap between columns
+
+
+      
+    }}>
+      <FormControlLabel value="cashin" control={<Radio />} label="Cash In"  />
+      <FormControlLabel value="cashout" control={<Radio />} label="Cash Out" />
+    </RadioGroup>
+   
+
+<Box > 
+    {selectedOption === 'cashin' && (
+      <FormControl>
+          <TextField
+              select
+              fullWidth
+              variant="filled"
+              label="Customer"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.customer}
+              name="customer"
+              error={!!touched.customer && !!errors.customer}
+              helperText={touched.customer && errors.customer}
+               sx={{
+        gridColumn: 'span 4',
+        width: '185%',    // Set width to 100%
+        minWidth: '200px' // Set a minimum width for better visibility
+      }}             
+       >
+              {customers.map(customer => (
+                <MenuItem key={customer._id} value={customer._id}>{customer.firstName} {customer.lastName}</MenuItem>
+              ))}
+            </TextField>
+      </FormControl>
+    )}
+
+
+{selectedOption === 'cashout' && (
+      <FormControl>
+          <TextField
+              select
+              fullWidth
+              variant="filled"
+              label="Vendor"
+              onBlur={handleBlur}
+              onChange={handleChange}
+              value={values.vendor}
+              name="vendor"
+              error={!!touched.vendor && !!errors.vendor}
+              helperText={touched.vendor && errors.vendor}
+               sx={{
+        gridColumn: 'span 2',
+        width: '185%',    // Set width to 100%
+        minWidth: '200px' // Set a minimum width for better visibility
+      }}
+              >
+              {vendors.map(vendor => 
+                <MenuItem key={vendor._id} value={vendor._id}>{vendor.firstName} {vendor.lastName}</MenuItem>
+              )}
+            </TextField>
+      </FormControl>
+    )}
+
+</Box>
+
+
               <TextField
                 fullWidth
                 variant="filled"
@@ -139,11 +229,24 @@ const EditPayment = () => {
                 name="amount"
                 error={!!touched.amount && !!errors.amount}
                 helperText={touched.amount && errors.amount}
-                sx={{ gridColumn: "span 4" }}
+                sx={{ gridColumn: "span 2" }}
               />
-
-
-            
+              <TextField
+                fullWidth
+                variant="filled"
+                type="date"
+                label="date"
+                onBlur={handleBlur}
+                onChange={handleChange}
+                value={values.date}
+                name="date"
+                error={!!touched.date && !!errors.date}
+                helperText={touched.date && errors.date}
+                sx={{ gridColumn: "span 2" }}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+              />
 
               <TextField
                 fullWidth
@@ -153,37 +256,41 @@ const EditPayment = () => {
                 onBlur={handleBlur}
                 onChange={handleChange}
                 value={values.description}
-                name="phoneNumber"
+                name="description"
                 error={!!touched.description && !!errors.description}
                 helperText={touched.description && errors.description}
                 sx={{ gridColumn: "span 4" }}
               />
-             <TextField
-                select
-                fullWidth
-                variant="filled"
-                label="Project"
-                onBlur={handleBlur}
-                onChange={handleChange}
-                value={values.project}
-                name="manager"
-                error={!!touched.project && !!errors.project}
-                helperText={touched.project && errors.project}
-                sx={{ gridColumn: "span 2" }}
-              >
-                 {projects
-                  .map((project) => (
-                    <MenuItem key={project.projectName} value={project.projectName}>
-                      {project.projectName}
-                    </MenuItem>
-                  ))}
-              </TextField>
-             
+
+
+
+                  {projects.length > 0 && (
+                  <TextField
+                    select
+                    fullWidth
+                    variant="filled"
+                    label="project"
+                    onBlur={handleBlur}
+                    onChange={handleChange}
+                    value={values.project}
+                    name="project"
+                    error={!!touched.project && !!errors.project}
+                    helperText={touched.project && errors.project}
+                    sx={{ gridColumn: "span 2" }}
+                  >
+                    {projects.map((project) => (
+                      <MenuItem key={project._id} value={project._id}>
+                        {project.projectName}
+                      </MenuItem>
+                    ))}
+                  </TextField>
+                )}
+
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
             <Button
               LinkComponent={Link}
-              to="/payments"
+              to="/payment"
               sx={{
                 backgroundColor: colors.blueAccent[700],
                 color: colors.grey[100],
@@ -192,7 +299,7 @@ const EditPayment = () => {
                 margin: "5px",
               }}
             >
-              Back to customer list
+              Back to payment list
             </Button>
             <Button type="submit" color="secondary" variant="contained" sx={{
               fontSize: "14px",
@@ -200,7 +307,7 @@ const EditPayment = () => {
               margin: "5px",
             }}
             disabled={isSubmitting}>
-              Update payment
+              Create New payment
             </Button>
           </Box>
           </form>
@@ -210,18 +317,17 @@ const EditPayment = () => {
   );
 };
 
-const phoneRegExp =
-  /^((\+[1-9]{1,4}[ -]?)|(\([0-9]{2,3}\)[ -]?)|([0-9]{2,4})[ -]?)*?[0-9]{3,4}[ -]?[0-9]{3,4}$/;
+
 
 const checkoutSchema = yup.object().shape({
-  firstName: yup.string().required("required"),
-  lastName: yup.string().required("required"),
-  email: yup.string().email("invalid email").required("required"),
-  phoneNumber: yup
-    .string()
-    .matches(phoneRegExp, "Phone number is not valid")
-    .required("required"),
-  address: yup.string().required("required"),
+  date: yup.date().required("required"),
+  customer: yup.string(), 
+  vendor: yup.string(), 
+  amount: yup.number().required("required"),
+  description: yup.string().required("required"),
+  project:yup.string().required("required"),
+
 });
+
 
 export default EditPayment;

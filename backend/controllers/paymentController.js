@@ -3,17 +3,17 @@ const Payment = require('../models/Payment');
 // Get all payments
 exports.getAllPayments = async (req, res) => {
   try {
-    const payments = await Payment.find().populate('project', 'customer'); // Populate project field with customer only
+    const payments = await Payment.find().populate('project').populate('customer').populate('vendor'); // Populate project field with customer only
     res.status(200).json(payments);
   } catch (error) {
-    res.status(500).json({ error: 'Error fetching payments' });
+    res.status(500).json({ error: 'Error fetching payments', message: error.message });
   }
 };
 
 // Get a payment by ID
 exports.getPaymentById = async (req, res) => {
   try {
-    const payment = await Payment.findById(req.params.id).populate('project', 'customer'); // Populate project field with customer only
+    const payment = await Payment.findById(req.params.id).populate('project').populate('customer').populate('vendor'); // Populate project field with customer only
     if (!payment) {
       return res.status(404).json({ error: 'Payment not found' });
     }
@@ -44,7 +44,7 @@ exports.createPayment = async (req, res) => {
     const newPayment = await Payment.create({ _id: id, ...req.body });
     res.status(201).json(newPayment);
   } catch (error) {
-    res.status(500).json({ error: 'Error creating payment' });
+    res.status(500).json({ error: 'Error creating payment', message: error.message });
   }
 };
 

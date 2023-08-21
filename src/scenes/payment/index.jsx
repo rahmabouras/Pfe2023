@@ -64,10 +64,28 @@ const Payment = () => {
       cellClassName: "name-column--cell",
     },
     {
-      field: "fromto",
-      headerName: "fromto",
+      field: "hhh",
+      headerName: "Transaction Type",
       flex: 1,
+      valueGetter: (params) => {
+        return params.row.cashin? "CashIn" : "CashOut";
+      },
     },
+    {
+      field: "cashin",
+      headerName: "From/To",
+      flex: 1,
+      valueGetter: (params) => {
+        if (params.row.cashin === 1) {
+          return params.row.customer ? `${params.row.customer.firstName} ${params.row.customer.lastName}` : "";
+        } else {
+          return params.row.vendor ? `${params.row.vendor.firstName} ${params.row.vendor.lastName}` : "";
+        }
+      },
+    },
+
+    
+    
     {
       field: "amount",
       headerName: "amount",
@@ -81,6 +99,9 @@ const Payment = () => {
     {
       field: "project",
       headerName: "project",
+      valueGetter: (params) => {
+          return params.row.project.projectName;
+      },
       flex: 1,
     },
     {
