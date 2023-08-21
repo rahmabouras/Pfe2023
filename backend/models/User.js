@@ -29,7 +29,8 @@ const userSchema = new mongoose.Schema({
     type: String,
     enum: ['admin', 'manager', 'finance', 'employee'],
     required: true
-  }
+  },
+  avatar: String,
 });
 
 
