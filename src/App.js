@@ -29,7 +29,7 @@ import Payment from "./scenes/payment";
 import AddPayment from "./scenes/payment/AddPayment";
 import EditPayement from "./scenes/payment/EditPayment";
 import SignIn from "./scenes/login";
-import Chat from "./scenes/chat/Chat";
+import Chat1 from "./scenes/chat1/";
 import AddUser from "./scenes/team/AddUser";
 import EditUser from "./scenes/team/EditUser";
 // import Home from "./scenes/home";
@@ -48,7 +48,7 @@ function App() {
             <Topbar setIsSidebar={setIsSidebar} />
             <Routes>
               <Route path="/" element={<Dashboard />} />
-              <Route path="/chat" element={<Chat />} />
+              <Route path="/chat/:id" element={<Chat1 />} />
               <Route path="/login" element={<SignIn />} />
               <Route path="/users" element={<Team />} />
               <Route path="/adduser" element={<AddUser />} />

@@ -9,7 +9,7 @@ import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
 
 const EditProject = () => {
-  const { id } = useParams(); // <-- get the customer ID from the URL
+  const { id } = useParams();
   const [initialValues, setInitialValues] = useState({
 
       projectName: "",
@@ -17,10 +17,10 @@ const EditProject = () => {
       manager: "",
       startDate: "",
       dueDate: "",
-      overallProgress: "",  // revised from 'overallProgress'
-      projectValue: "",     // revised from 'projectValue'
+      overallProgress: "",
+      projectValue: "",
       status: "",
-      bic: "",       // added this field since it's used in the form
+      bic: "",
 
   });
 
