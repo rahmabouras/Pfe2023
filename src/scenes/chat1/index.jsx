@@ -1,10 +1,14 @@
 import React, { useState, useEffect } from "react";
 import axios from 'axios';
+import io from "socket.io-client";
 import { useParams } from 'react-router-dom';
 import { Box, useTheme, Typography, Paper, Grid, Divider, TextField, List, ListItem, ListItemIcon, ListItemText, Avatar, Fab, IconButton } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
+import Header from "../../components/Header";
 import { tokens } from "../../theme";
+
+const socket = io.connect("http://localhost:3001");
 
 const Chat1 = () => {
   const theme = useTheme();
@@ -12,6 +16,45 @@ const Chat1 = () => {
   const [users, setUsers] = useState([]);
   const { id } = useParams(); // Get the user ID from the route
   const currentUserIndex = parseInt(id);
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [focusedUser, setFocusedUser] = useState(null); 
+  const [currentMessage, setCurrentMessage] = useState("");
+  const [messageList, setMessageList] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const sendMessage = async () => {
+    if (currentMessage !== "") {
+      const messageData = {
+        room: currentUserIndex <= parseInt(selectedUser) ?  "conv"+currentUserIndex+"with"+selectedUser : "conv"+selectedUser+"with"+currentUserIndex,
+        author: users[0].id,
+        message: currentMessage,
+        time:
+          new Date(Date.now()).getHours() +
+          ":" +
+          new Date(Date.now()).getMinutes(),
+      };
+
+      await socket.emit("send_message", messageData);
+      setMessageList((list) => [...list, messageData]);
+      setCurrentMessage("");
+    }
+  };
+
+  useEffect(() => {
+    // Existing receive_message handler
+    socket.on("receive_message", (data) => {
+      setMessageList((list) => [...list, data]);
+    });
+  
+    // New handler for old messages
+    socket.on("old_messages", (data) => {
+      setMessageList(data);
+      console.log("old_messages", data);
+    });
+  }, [socket]);
+
+
+
   useEffect(() => {
       // Fetch users from the backend
       axios.get('http://localhost:3000/api/users')
@@ -41,19 +84,25 @@ const Chat1 = () => {
   }, []);
 
 
+  const handleUserClick = async (user) => {
+    setFocusedUser(user);
+    setSelectedUser(user.id);
+    await socket.emit("join_room", currentUserIndex <= parseInt(selectedUser) ?  "conv"+currentUserIndex+"with"+selectedUser : "conv"+selectedUser+"with"+currentUserIndex);
+  };
+
+
   return (
     <Box m="20px">
-      <Grid container>
-        <Grid item xs={12}>
-          <Typography variant="h5">Chat</Typography>
-        </Grid>
-      </Grid>
-      <Paper>
-        <Grid container sx={{ height: "87vh" }}>
-          <Grid item xs={3} sx={{ borderRight: "1px solid #e0e0e0" }}>
+        <Header
+        title="Chat"
+        subtitle="Chat with the Team"
+      />
+      <Paper sx={{ backgroundColor: theme.palette.background.default }}>
+        <Grid container sx={{ height: "78vh" }}>
+          <Grid item xs={3} sx={{ borderRight: "1px solid #e0e0e0" ,height: "78vh" }}>
             <List>
             {users && users.length > 0 &&
-              <ListItem button key={users[0].id}>
+              <ListItem key={users[0].id}>
                 <ListItemIcon>
                   <Avatar
                     alt={users[0].name}
@@ -66,68 +115,84 @@ const Chat1 = () => {
             </List>
             <Divider />
             <Grid item xs={12} sx={{ padding: "10px" }}>
-              <TextField id="outlined-basic-email" label="Search" variant="outlined" fullWidth />
+            <TextField
+                id="outlined-basic-email"
+                label="Search"
+                variant="outlined"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                fullWidth
+                />
+
             </Grid>
             <Divider />
             <List>
-            {users && users.length > 0 && users.map(user =>
-            {
-              if (user.id !== currentUserIndex) {
-               return (<ListItem button key={user.id}>
-                <ListItemIcon>
-                 <Avatar
-                    alt={user.name}
-                    src={user.avatar}
-                  />
-                </ListItemIcon>
-                <ListItemText primary={user.name}></ListItemText>
-              </ListItem>)
+            {users && users.length > 0 &&
+                users
+                .filter(user => user.name.toLowerCase().includes(searchTerm.toLowerCase()))
+                .map((user) => {
+                    if (user.id !== currentUserIndex) {
+                    return (
+                        <ListItem
+                        button
+                        key={user.id}
+                        onClick={() => handleUserClick(user)}
+                        sx={{
+                            backgroundColor: user.id === selectedUser ? colors.blueAccent[700] : "transparent", // Highlighting logic
+                            '&:hover': {
+                              backgroundColor: user.id === selectedUser ? colors.blueAccent[700] : "rgba(0, 0, 0, 0.08)",
+                            },
+                          }}
+                        >
+                        <ListItemIcon>
+                            <Avatar alt={user.name} src={user.avatar} />
+                        </ListItemIcon>
+                        <ListItemText primary={user.name}></ListItemText>
+                        </ListItem>
+                    );
+                    }
+                    return null;
+                })
                 }
-            }
-            )
-
-            }
 
             </List>
           </Grid>
           <Grid item xs={9}>
-            <List sx={{ height: "77vh", overflowY: "auto" }}>
+            <List sx={{ height: "68vh", overflowY: "auto" }}>
               {/* Message List */}
-              <ListItem key="1">
-                <Grid container>
-                  <Grid item xs={12}>
-                    <ListItemText align="right" primary="Hey man, What's up ?"></ListItemText>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <ListItemText align="right" secondary="09:30"></ListItemText>
-                  </Grid>
-                </Grid>
-              </ListItem>
-              <ListItem key="2">
-                <Grid container>
-                  <Grid item xs={12}>
-                    <ListItemText align="left" primary="Hey, Iam Good! What about you ?"></ListItemText>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <ListItemText align="left" secondary="09:31"></ListItemText>
-                  </Grid>
-                </Grid>
-              </ListItem>
-              <ListItem key="3">
-                <Grid container>
-                  <Grid item xs={12}>
-                    <ListItemText align="right" primary="Cool. i am good, let's catch up!"></ListItemText>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <ListItemText align="right" secondary="10:30"></ListItemText>
-                  </Grid>
-                </Grid>
-              </ListItem>
+                        {messageList && messageList.length > 0 && messageList.map(message => (
+                              <ListItem key={message.id}>
+                              <Grid container>
+                                <Grid item xs={12}>
+                                  <ListItemText align={currentUserIndex === message.author ? "right" : "left"} primary={message.message}></ListItemText>
+                                </Grid>
+                                <Grid item xs={12}>
+                                  <ListItemText align={currentUserIndex === message.author ? "right" : "left"} secondary={message.time}></ListItemText>
+                                </Grid>
+                              </Grid>
+                            </ListItem>
+            )
+                
+                
+                )}
+
             </List>
             <Divider />
             <Grid container sx={{ padding: "20px" }}>
               <Grid item xs={10}>
-                <TextField id="outlined-basic-email" label="Type Something" fullWidth />
+              <TextField
+                id="outlined-basic-email"
+                label="Type Something"
+                type="text"
+                value={currentMessage || ''} // Add this change
+                placeholder="Hey..."
+                onChange={(event) => {
+                    setCurrentMessage(event.target.value);
+                }}
+                onKeyPress={(event) => {
+                    event.key === "Enter" && sendMessage();
+                }} fullWidth />
+
               </Grid>
               <Grid item xs={2} align="right">
                 <IconButton color="secondary" aria-label="attach-file" sx={{
@@ -142,7 +207,7 @@ const Chat1 = () => {
                     padding: "10px 20px",
                     margin: "5px",
                 }}>
-                  <SendIcon />
+                  <SendIcon onClick={sendMessage}/>
                 </Fab>
               </Grid>
             </Grid>
