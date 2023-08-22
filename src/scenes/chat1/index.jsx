@@ -17,7 +17,6 @@ const Chat1 = () => {
   const { id } = useParams(); // Get the user ID from the route
   const currentUserIndex = parseInt(id);
   const [selectedUser, setSelectedUser] = useState(null);
-  const [focusedUser, setFocusedUser] = useState(null); 
   const [currentMessage, setCurrentMessage] = useState("");
   const [messageList, setMessageList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
@@ -94,7 +93,8 @@ const Chat1 = () => {
               }
   
               setUsers(mappedUsers);
-              console.log(mappedUsers);
+              handleUserClick(mappedUsers[1])
+              console.log(mappedUsers[1].id);
           })
           .catch(error => {
               console.error("An error occurred while fetching user data:", error);
@@ -103,7 +103,6 @@ const Chat1 = () => {
 
 
   const handleUserClick = (user) => {
-    setFocusedUser(user);
     setSelectedUser(user.id);
     setMessageList([]);
     const roomName = currentUserIndex <= parseInt(user.id) ? "conv" + currentUserIndex + "with" + user.id : "conv" + user.id + "with" + currentUserIndex;
@@ -250,9 +249,15 @@ const handleFileUpload = () => {
                                   <ListItemText align={currentUserIndex === parseInt(message.author) ? "right" : "left"} primary={message.file ? "" : message.message}></ListItemText>
                                 </Grid>
                                 <Grid item xs={12}>
-                                  <ListItemText align={currentUserIndex === parseInt(message.author) ? "right" : "left"} secondary={message.time}>{message.file && (
-                                 <a href="#" onClick={() => handleFileDownload(message.file)}>{message.message}</a>
-                                )}</ListItemText>
+                                <ListItemText align={currentUserIndex === parseInt(message.author) ? "right" : "left"} secondary={message.time}>{message.file && (
+                                    (message.file.toLowerCase().endsWith(".jpg") || message.file.toLowerCase().endsWith(".jpeg") || message.file.toLowerCase().endsWith(".png")) ?
+                                    <img src={`http://localhost:3001${message.file}`} alt="attachment" style={{ maxWidth: "200px" }} />
+                                    :
+                                    <a href="#" onClick={() => handleFileDownload(message.file)}>{message.message}</a>
+                                    )}
+                                </ListItemText>
+
+
                                 </Grid>
                                 
                               </Grid>
