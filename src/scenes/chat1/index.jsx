@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from 'axios';
 import io from "socket.io-client";
 import { useParams } from 'react-router-dom';
@@ -22,36 +22,47 @@ const Chat1 = () => {
   const [messageList, setMessageList] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [open, setOpen] = useState(false);
+  const messagesEndRef = useRef(null);
 
 
-  const sendMessage = async () => {
-    if (currentMessage !== "") {
+  const sendMessage = async (filename) => {
+    if (currentMessage !== "" || selectedFile) {
       const messageData = {
-        room: currentUserIndex <= parseInt(selectedUser) ?  "conv"+currentUserIndex+"with"+selectedUser : "conv"+selectedUser+"with"+currentUserIndex,
+        room: currentUserIndex <= parseInt(selectedUser)
+          ? "conv" + currentUserIndex + "with" + selectedFile
+          : "conv" + selectedUser + "with" + currentUserIndex,
         author: users[0].id,
-        message: currentMessage,
+        message: selectedFile ? selectedFile.name :currentMessage,
+        file: selectedFile ? `/uploads/${filename}` : null, // Include file path if available
         time:
           new Date(Date.now()).getHours() +
           ":" +
           new Date(Date.now()).getMinutes(),
       };
-
+  
       await socket.emit("send_message", messageData);
-      setMessageList((list) => [...list, messageData]);
+      setMessageList((list) => [...list, {...messageData, id: Date.now()}]);
+      console.log(messageList)
       setCurrentMessage("");
+      setSelectedFile(null); // Clear selected file
     }
+
+    setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
   };
+  
 
   useEffect(() => {
     // Existing receive_message handler
     socket.on("receive_message", (data) => {
       setMessageList((list) => [...list, data]);
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
     });
   
     // New handler for old messages
     socket.on("old_messages", (data) => {
       setMessageList(data);
       console.log("old_messages", data);
+      setTimeout(() => messagesEndRef.current?.scrollIntoView({ behavior: "smooth" }), 100);
     });
 
     return () => { // Clean up listeners when the component unmounts
@@ -127,16 +138,39 @@ const handleFileChange = (event) => {
 
 // Function to handle file upload
 const handleFileUpload = () => {
-  if (selectedFile) {
-    const formData = new FormData();
-    formData.append("file", selectedFile);
-    axios.post("http://localhost:3001/upload", formData).then((response) => {
-      console.log("File uploaded successfully");
-      // You can further process the response as needed
-    });
-  }
-};
+    if (selectedFile) {
+      // Append current date to the original file name
+      const currentDate = Date.now();
+      const ext = selectedFile.name.substr(selectedFile.name.lastIndexOf('.'));
+      const nameWithoutExt = selectedFile.name.substr(0, selectedFile.name.lastIndexOf('.'));
+      const newName = `${nameWithoutExt}-${currentDate}${ext}`;
+  
+      // Create a new Blob with the same content as the selected file
+      const newFile = new Blob([selectedFile], { type: selectedFile.type });
+  
+      // Create FormData and append the new Blob with the new name
+      const formData = new FormData();
+      formData.append("file", newFile, newName);
+  
+      axios.post("http://localhost:3001/upload", formData).then((response) => {
+        console.log("File uploaded successfully");
+        // You can further process the response as needed
+        sendMessage(newName);
+      });
+    }
+  };
+  
 
+  // Function to handle file download
+  const handleFileDownload = (fileUrl) => {
+    const url = `http://localhost:3001${fileUrl}`; // Update the URL to point to your server
+    const link = document.createElement("a");
+    link.href = url;
+    link.setAttribute("download", "file"); // You might want to use the actual file name here
+    document.body.appendChild(link);
+    link.click();
+    link.parentNode.removeChild(link);
+  };
   
 
 
@@ -213,18 +247,21 @@ const handleFileUpload = () => {
                               <ListItem key={message.id}>
                               <Grid container>
                                 <Grid item xs={12}>
-                                  <ListItemText align={currentUserIndex === message.author ? "right" : "left"} primary={message.message}></ListItemText>
+                                  <ListItemText align={currentUserIndex === parseInt(message.author) ? "right" : "left"} primary={message.file ? "" : message.message}></ListItemText>
                                 </Grid>
                                 <Grid item xs={12}>
-                                  <ListItemText align={currentUserIndex === message.author ? "right" : "left"} secondary={message.time}></ListItemText>
+                                  <ListItemText align={currentUserIndex === parseInt(message.author) ? "right" : "left"} secondary={message.time}>{message.file && (
+                                 <a href="#" onClick={() => handleFileDownload(message.file)}>{message.message}</a>
+                                )}</ListItemText>
                                 </Grid>
+                                
                               </Grid>
                             </ListItem>
             )
                 
                 
                 )}
-
+                <div ref={messagesEndRef} />
             </List>
             <Divider />
             <Grid container sx={{ padding: "20px" }}>
