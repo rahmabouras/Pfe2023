@@ -30,7 +30,7 @@ const userSchema = new mongoose.Schema({
     enum: ['admin', 'manager', 'finance', 'employee'],
     required: true
   },
-  avatar: String,
+  avatarUrl: String,
 });
 
 

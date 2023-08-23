@@ -8,7 +8,7 @@ const projectSchema = new mongoose.Schema({
   projectName: {
     type: String,
     required: true,
-  },
+  }, 
   customer: {
     type: Number,
     ref: 'Customer',
@@ -44,6 +44,8 @@ const projectSchema = new mongoose.Schema({
     type: String,
     required: false
   },
+  issues: [{ type: Number, ref: 'Issue' }],
+  users: [{ type: Number, ref: 'User' }],
 
 });
 

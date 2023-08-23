@@ -3,7 +3,7 @@ const Project = require('../models/Project');
 // Get all projects
 exports.getAllProjects = async (req, res) => {
   try {
-    const projects = await Project.find().populate('customer').populate('manager');
+    const projects = await Project.find().populate('customer').populate('manager').populate('users').populate('issues');
     res.status(200).json(projects);
   } catch (error) {
     res.status(500).json({ error: 'Error fetching projects' });
@@ -13,7 +13,7 @@ exports.getAllProjects = async (req, res) => {
 // Get a project by ID
 exports.getProjectById = async (req, res) => {
   try {
-    const project = await Project.findById(req.params.id).populate('customer').populate('manager');
+    const project = await Project.findById(req.params.id).populate('customer').populate('manager').populate('users').populate('issues');
     if (!project) {
       return res.status(404).json({ error: 'Project not found' });
     }
