@@ -1,98 +1,73 @@
+import axios from 'axios';
 
-export function initTasks() {
+export async function initTasks() {
+  let projects = [];
+
+  try {
+    const response = await axios.get('http://localhost:4001/api/projects');
+    projects = response.data[0];
+  } catch (error) {
+    console.error(`There was an error retrieving the projects: ${error}`);
+  }
+
+  console.log(projects);
+  projects.issues.sort((a, b) => new Date(a.start) - new Date(b.start));
+
   const currentDate = new Date();
-  const tasks = [
+
+  let tasks = [
     {
       start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
       end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 15),
-      name: "Some Project",
-      id: "ProjectSample",
+      name: projects.name,
+      id: projects._id.toString(),
       progress: 25,
       type: "project",
       hideChildren: false,
       displayOrder: 1,
     },
-    {
-      start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
-      end: new Date(
-        currentDate.getFullYear(),
-        currentDate.getMonth(),
-        2,
-        12,
-        28
-      ),
-      name: "Idea",
-      id: "Task 0",
-      progress: 45,
-      type: "task",
-      project: "ProjectSample",
-      displayOrder: 2,
-    },
-    {
-      start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 2),
-      end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 4, 0, 0),
-      name: "Research",
-      id: "Task 1",
-      progress: 25,
-      dependencies: ["Task 0"],
-      type: "task",
-      project: "ProjectSample",
-      displayOrder: 3,
-    },
-    {
-      start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 4),
-      end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 8, 0, 0),
-      name: "Discussion with team",
-      id: "Task 2",
-      progress: 10,
-      dependencies: ["Task 1"],
-      type: "task",
-      project: "ProjectSample",
-      displayOrder: 4,
-    },
-    {
-      start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 8),
-      end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 9, 0, 0),
-      name: "Developing",
-      id: "Task 3",
-      progress: 2,
-      dependencies: ["Task 2"],
-      type: "task",
-      project: "ProjectSample",
-      displayOrder: 5,
-    },
-    {
-      start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 8),
-      end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 10),
-      name: "Review",
-      id: "Task 4",
-      type: "task",
-      progress: 70,
-      dependencies: ["Task 2"],
-      project: "ProjectSample",
-      displayOrder: 6,
-    },
-    {
-      start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 15),
-      end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 15),
-      name: "Release",
-      id: "Task 6",
-      progress: currentDate.getMonth(),
-      type: "milestone",
-      dependencies: ["Task 4"],
-      project: "ProjectSample",
-      displayOrder: 7,
-    },
-    {
-      start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 18),
-      end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 19),
-      name: "Party Time",
-      id: "Task 9",
-      progress: 0,
-      isDisabled: true,
-      type: "task",
-    },
   ];
+
+  projects.issues.forEach((issue, index) => {
+    let task = {
+      start: new Date(issue.start),
+      end: new Date(issue.end),
+      name: issue.title,
+      id: issue._id.toString(), // Using issue ID as task ID
+      progress: issue.timeRemaining ? (issue.timeSpent / (issue.timeSpent + issue.timeRemaining)) * 100 : (issue.timeSpent / issue.estimate) * 100,
+      type: "task",
+      project: projects._id.toString(),
+    };
+
+    if (index > 0) {
+      task.dependencies = [projects.issues[index - 1]._id.toString()]; // Setting dependencies to previous task ID
+    }
+
+    tasks.push(task);
+  });
+
+  tasks.sort((a, b) => a.start - b.start);
+
+  // Optionally update displayOrder after sorting
+  tasks.forEach((task, index) => {
+    task.displayOrder = index + 1;
+  });
+
+  tasks.push({
+    start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 15),
+    end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 15),
+    name: "Release",
+    id: `Task ${tasks.length}`,
+    progress: currentDate.getMonth(),
+    type: "milestone",
+    dependencies: [tasks[tasks.length - 1].id],
+    project: projects._id.toString(),
+    displayOrder: tasks.length + 1,
+  });
+
+  console.log("tasks =================================================");
+  console.log(tasks);
+
   return tasks;
 }
 
