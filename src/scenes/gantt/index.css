@@ -2,6 +2,13 @@
   margin-bottom: 2rem;
   width: 1600px;
 }
+
+.Header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
 .ViewContainer {
   list-style: none;
   -ms-box-orient: horizontal;
@@ -80,4 +87,17 @@ input:checked + .Slider:before {
   -webkit-transform: translateX(26px);
   -ms-transform: translateX(26px);
   transform: translateX(26px);
+}
+
+
+
+.gantt-wrapper {
+  /* Your custom CSS rules */
+  border: 2px solid #1683a7;
+  border-radius: 5px;
+}
+
+/* You can also override specific styles in the Gantt component by targeting them */
+.gantt-task-react .gantt-row {
+  background-color: #d11c1c;
 }

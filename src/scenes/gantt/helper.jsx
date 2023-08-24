@@ -1,26 +1,34 @@
 import axios from 'axios';
 
-export async function initTasks() {
-  let projects = [];
+export async function initTasks(id) {
+  let project = null;
 
   try {
-    const response = await axios.get('http://localhost:4001/api/projects');
-    projects = response.data[0];
+    if (id !== 0) {
+    const response = await axios.get(`http://localhost:3000/api/projects/${id}`);
+    project = response.data;
+  }
   } catch (error) {
-    console.error(`There was an error retrieving the projects: ${error}`);
+    console.error(`There was an error retrieving the project: ${error}`);
   }
 
-  console.log(projects);
-  projects.issues.sort((a, b) => new Date(a.start) - new Date(b.start));
+  console.log(project);
+
+  if (project === null) {
+    console.log('Project data is null, returning an empty task array.');
+    return [];
+  }
+
+  project.issues.sort((a, b) => new Date(a.start) - new Date(b.start));
 
   const currentDate = new Date();
 
   let tasks = [
     {
-      start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 1),
-      end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 15),
-      name: projects.name,
-      id: projects._id.toString(),
+      start: new Date(project.startDate),
+      end: new Date(project.dueDate),
+      name: project.projectName,
+      id: project._id.toString(),
       progress: 25,
       type: "project",
       hideChildren: false,
@@ -28,7 +36,7 @@ export async function initTasks() {
     },
   ];
 
-  projects.issues.forEach((issue, index) => {
+  project.issues.forEach((issue, index) => {
     let task = {
       start: new Date(issue.start),
       end: new Date(issue.end),
@@ -36,11 +44,11 @@ export async function initTasks() {
       id: issue._id.toString(), // Using issue ID as task ID
       progress: issue.timeRemaining ? (issue.timeSpent / (issue.timeSpent + issue.timeRemaining)) * 100 : (issue.timeSpent / issue.estimate) * 100,
       type: "task",
-      project: projects._id.toString(),
+      project: project._id.toString(),
     };
 
     if (index > 0) {
-      task.dependencies = [projects.issues[index - 1]._id.toString()]; // Setting dependencies to previous task ID
+      task.dependencies = [project.issues[index - 1]._id.toString()]; // Setting dependencies to previous task ID
     }
 
     tasks.push(task);
@@ -54,14 +62,14 @@ export async function initTasks() {
   });
 
   tasks.push({
-    start: new Date(currentDate.getFullYear(), currentDate.getMonth(), 15),
-    end: new Date(currentDate.getFullYear(), currentDate.getMonth(), 15),
+    start: new Date(project.dueDate),
+    end: new Date(project.dueDate),
     name: "Release",
     id: `Task ${tasks.length}`,
     progress: currentDate.getMonth(),
     type: "milestone",
     dependencies: [tasks[tasks.length - 1].id],
-    project: projects._id.toString(),
+    project: project._id.toString(),
     displayOrder: tasks.length + 1,
   });
 

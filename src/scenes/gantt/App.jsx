@@ -1,25 +1,42 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { ViewMode, Gantt } from "gantt-task-react";
 import { ViewSwitcher } from "./components/view-switcher";
+import { Box, Button, TextField, useTheme, MenuItem } from "@mui/material";
 import { getStartEndDateForProject, initTasks } from "./helper";
 import axios from 'axios';
-import "gantt-task-react/dist/index.css";
+import "./gantt.css";
 
-// Init
+
 const App = () => {
   const [view, setView] = React.useState(ViewMode.Day);
   const [tasks, setTasks] = React.useState([]);
+  const [projectsList, setProjectsList] = React.useState([]);
+  const [selectedProject, setselectedProject] = React.useState(0);
   const [isChecked, setIsChecked] = React.useState(true);
   let columnWidth = 65;
+  
+  const theme = useTheme();
+  const mode = theme.palette.mode;
+  
+  useEffect(() => {
+
+    async function getProjectList() {
+      const response = await axios.get('http://localhost:3000/api/projects/list');
+      setProjectsList(response.data);
+      setselectedProject(response.data[0]._id);
+    }
+
+    getProjectList()
+  }, []);
 
   useEffect(() => {
     async function fetchData() {
-      const tasks = await initTasks();
+      const tasks = await initTasks(selectedProject);
       setTasks(tasks);
     }
 
     fetchData();
-  }, []);
+  }, [selectedProject]);
 
   if (view === ViewMode.Year) {
     columnWidth = 350;
@@ -42,6 +59,11 @@ const App = () => {
       throw error;
     }
   };
+  
+  const handleProjectChange = (event) => {
+    setselectedProject(event.target.value);
+  };
+  
   
 
   const handleTaskChange = (task) => {
@@ -99,14 +121,32 @@ const App = () => {
   };
 
   return (
+    <div className={mode === 'dark' ? 'gantt-dark' : 'gantt-light'}>
     <div className="Wrapper">
+      <div className="Header">
+      <TextField
+                select
+                fullWidth
+                variant="filled"
+                label="Please select a Project"
+                name="Project"
+                value={selectedProject}
+                onChange={handleProjectChange}
+                sx={{ width: '400px' }}
+              >
+                {projectsList.map(project => 
+                <MenuItem key={project._id} value={project._id}>{project.projectName}</MenuItem>
+                )}
+              </TextField>
+
       <ViewSwitcher
         onViewModeChange={viewMode => setView(viewMode)}
         onViewListChange={setIsChecked}
         isChecked={isChecked}
       />
+      </div>
 
-      <h3>Gantt With Limited Height</h3>
+      <h3>Gantt Diagram {tasks.length>0 && "Of "+ tasks[0].name}</h3>
       {tasks.length>0 ? 
       (<Gantt
         tasks={tasks}
@@ -119,9 +159,10 @@ const App = () => {
         onSelect={handleSelect}
         onExpanderClick={handleExpanderClick}
         listCellWidth={isChecked ? "155px" : ""}
-        ganttHeight={700}
+        ganttHeight={680}
         columnWidth={columnWidth}
       />): (<div> Loading </div>)}
+    </div>
     </div>
   );
 };

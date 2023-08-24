@@ -1,0 +1,18 @@
+/* Assuming that these classes are part of the left task list */
+._3_ygE, ._3ZbQT {
+    background: #333; /* Dark background */
+    border-color: #555; /* Light border color */
+  }
+  
+  /* If the left task list has even rows with a different background */
+  ._34SS0:nth-of-type(even) {
+    background-color: #444; /* Lighter dark background for even rows */
+  }
+  
+  /* If the left task list has text that needs to be lightened */
+  ._2QjE6, ._29NTg {
+    color: #ccc; /* Lighter text color */
+  }
+  
+  /* Continue with any other specific changes for the left task list... */
+  

@@ -80,7 +80,7 @@ const Chat1 = () => {
               const mappedUsers = response.data.map(user => ({
                   id: user._id,
                   name: user.firstName,
-                  avatar: user.avatar
+                  avatar: user.avatarUrl
               }));
   
               // Find the index of the user with the ID matching currentUserIndex

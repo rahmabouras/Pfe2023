@@ -10,6 +10,18 @@ exports.getAllProjects = async (req, res) => {
   }
 };
 
+// Get project list with only id and projectName fields
+exports.getProjectsList = async (req, res) => {
+  try {
+    // Specify the fields you want to include by setting them to 1
+    const projects = await Project.find({}, { _id: 1, projectName: 1 });
+    res.status(200).json(projects);
+  } catch (error) {
+    res.status(500).json({ error: 'Error fetching project list' });
+  }
+};
+
+
 // Get a project by ID
 exports.getProjectById = async (req, res) => {
   try {

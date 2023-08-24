@@ -84,7 +84,7 @@ const EditProject = () => {
 
 
   const handleFormSubmit = (values, { setSubmitting }) => {
-    axios.post('http://localhost:3000/api/projects', values)
+    axios.put(`http://localhost:3000/api/projects/${id}`, values)
       .then(response => {
         console.log(response);
         setSubmitting(false);

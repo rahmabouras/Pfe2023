@@ -4,7 +4,7 @@
     "description": "A MERN project management system",
     "main": "app.js",
     "scripts": {
-        "start": "node app.js"
+        "start": "nodemon app.js"
     },
     "author": "Your Name",
     "license": "MIT",
