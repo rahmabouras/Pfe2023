@@ -51,7 +51,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/chat/:id" element={<Chat1 />} />
-              <Route path="/gantt/:id" element={<GanttComponent />} />
+              <Route path="/gantt/" element={<GanttComponent />} />
               <Route path="/kanban/" element={<Kanban />} />
               <Route path="/login" element={<SignIn />} />
               <Route path="/users" element={<Team />} />

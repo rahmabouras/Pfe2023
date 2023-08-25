@@ -5,6 +5,7 @@ import { Box, Button, TextField, useTheme, MenuItem } from "@mui/material";
 import { getStartEndDateForProject, initTasks } from "./helper";
 import axios from 'axios';
 import "./gantt.css";
+import Header from "components/Header";
 
 
 const App = () => {
@@ -48,7 +49,7 @@ const App = () => {
 
   const updateIssue = async (issue) => {
     try {
-      const response = await axios.put(`http://localhost:4001/api/issues/${issue.id}`, {
+      const response = await axios.put(`http://localhost:3000/api/issues/${issue.id}`, {
         start: issue.start,
         end: issue.end,
         progress: Math.round(issue.progress)
@@ -71,19 +72,19 @@ const App = () => {
   
     updateIssue(task).then((updatedIssue) => {
       let newTasks = tasks.map(t => (t.id === task.id ? task : t));
-      if (task.project) {
-        const [start, end] = getStartEndDateForProject(newTasks, task.project);
-        const project = newTasks[newTasks.findIndex(t => t.id === task.project)];
-        if (
-          project.start.getTime() !== start.getTime() ||
-          project.end.getTime() !== end.getTime()
-        ) {
-          const changedProject = { ...project, start, end };
-          newTasks = newTasks.map(t =>
-            t.id === task.project ? changedProject : t
-          );
-        }
-      }
+      // if (task.project) {
+      //   const [start, end] = getStartEndDateForProject(newTasks, task.project);
+      //   const project = newTasks[newTasks.findIndex(t => t.id === task.project)];
+      //   if (
+      //     project.start.getTime() !== start.getTime() ||
+      //     project.end.getTime() !== end.getTime()
+      //   ) {
+      //     const changedProject = { ...project, start, end };
+      //     newTasks = newTasks.map(t =>
+      //       t.id === task.project ? changedProject : t
+      //     );
+      //   }
+      // }
       setTasks(newTasks);
     });
   };
@@ -121,7 +122,10 @@ const App = () => {
   };
 
   return (
+    <Box m="20px">
+      <Header title="GANTT DIAGRAM" subtitle={tasks.length>0 ? "Gantt Diagram Of "+ projectsList.find(project => project._id === selectedProject).projectName : "Gantt Diagram "} />
     <div className={mode === 'dark' ? 'gantt-dark' : 'gantt-light'}>
+      
     <div className="Wrapper">
       <div className="Header">
       <TextField
@@ -132,21 +136,20 @@ const App = () => {
                 name="Project"
                 value={selectedProject}
                 onChange={handleProjectChange}
-                sx={{ width: '400px' }}
+                sx={{ width: '400px' , marginBottom: '10px' }}
               >
                 {projectsList.map(project => 
                 <MenuItem key={project._id} value={project._id}>{project.projectName}</MenuItem>
                 )}
               </TextField>
 
-      <ViewSwitcher
+              <ViewSwitcher
         onViewModeChange={viewMode => setView(viewMode)}
         onViewListChange={setIsChecked}
         isChecked={isChecked}
       />
       </div>
 
-      <h3>Gantt Diagram {tasks.length>0 && "Of "+ tasks[0].name}</h3>
       {tasks.length>0 ? 
       (<Gantt
         tasks={tasks}
@@ -159,11 +162,12 @@ const App = () => {
         onSelect={handleSelect}
         onExpanderClick={handleExpanderClick}
         listCellWidth={isChecked ? "155px" : ""}
-        ganttHeight={680}
+        ganttHeight={610}
         columnWidth={columnWidth}
       />): (<div> Loading </div>)}
     </div>
     </div>
+    </Box>
   );
 };
 
