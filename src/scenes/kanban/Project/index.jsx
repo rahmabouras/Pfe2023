@@ -1,11 +1,13 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import useApi from 'scenes/kanban/shared/hooks/api';
+import axios from 'axios';
 import { updateArrayItemById } from 'scenes/kanban/shared/utils/javascript';
 import { PageLoader, PageError, Modal } from 'scenes/kanban/shared/components';
 
 import Board from './Board';
 import { ProjectPage } from './Styles';
-
+import Header from 'components/Header';
+import { MenuItem, TextField } from '@mui/material';
 
 const replaceKeysRecursively = (obj) => {
   if (obj === null || typeof obj !== 'object') {
@@ -32,169 +34,36 @@ const replaceKeysRecursively = (obj) => {
 
 
 const Project = () => {
+  const [projectsList, setProjectsList] = useState([]);
+  const [selectedProject, setselectedProject] = useState(1);
+  const [{ data, error, setLocalData }, fetchProject] = useApi.get('/projects/');
 
-  const [{ data, error, setLocalData }, fetchProject] = useApi.get('/projects/1');
+  useEffect(() => {
+    const project = replaceKeysRecursively(data);
+    console.log(project);
+  }, [data]);
 
-  if (!data) return <PageLoader />;
-  if (error) return <PageError />;
+useEffect(() => {
 
-const project = replaceKeysRecursively(data);
-console.log(project);
-// const project = {
-//   ...project1,
-//   issues: project1.issues.map(issue => ({
-//     ...issue,
-//     userIds: issue.users
-//   }))
-//   , users: project1.users.map(user => ({
-//     ...user,
-//     projectId: "64d9ebbaa3430a1253ac7e2d"
-//   }))
-// };
+  async function getProjectList() {
+    const response = await axios.get('http://localhost:3000/api/projects/list');
+    setProjectsList(response.data);
+    setselectedProject(response.data[0]._id);
+    console.log("Projects requested")
+    console.log(response.data);
+  }
 
-//   const project = {
-//     "id": 184072,
-//     "name": "singularity 1.0",
-//     "url": "https://www.atlassian.com/software/jira",
-//     "description": "Plan, track, and manage your agile and software development projects in Jira. Customize your workflow, collaborate, and release great software.",
-//     "category": "software",
-//     "createdAt": "2023-08-04T21:20:44.935Z",
-//     "updatedAt": "2023-08-04T21:20:44.935Z",
-//     "users": [
-//         {
-//             "id": 552952,
-//             "name": "Pickle Rick",
-//             "email": "rick@jira.guest",
-//             "avatarUrl": "https://i.ibb.co/7JM1P2r/picke-rick.jpg",
-//             "createdAt": "2023-08-04T21:20:44.930Z",
-//             "updatedAt": "2023-08-04T21:20:44.935Z",
-//             "projectId": 184072
-//         },
-//         {
-//             "id": 552953,
-//             "name": "Baby Yoda",
-//             "email": "yoda@jira.guest",
-//             "avatarUrl": "https://i.ibb.co/6n0hLML/baby-yoda.jpg",
-//             "createdAt": "2023-08-04T21:20:44.930Z",
-//             "updatedAt": "2023-08-04T21:20:44.935Z",
-//             "projectId": 184072
-//         },
-//         {
-//             "id": 552954,
-//             "name": "Lord Gaben",
-//             "email": "gaben@jira.guest",
-//             "avatarUrl": "https://i.ibb.co/6RJ5hq6/gaben.jpg",
-//             "createdAt": "2023-08-04T21:20:44.930Z",
-//             "updatedAt": "2023-08-04T21:20:44.935Z",
-//             "projectId": 184072
-//         }
-//     ],
-//     "issues": [
-//         {
-//             "id": 1497734,
-//             "title": "Click on an issue to see what's behind it.",
-//             "type": "task",
-//             "status": "backlog",
-//             "priority": "2",
-//             "listPosition": 2,
-//             "createdAt": "2023-08-04T21:20:44.952Z",
-//             "updatedAt": "2023-08-04T21:20:44.952Z",
-//             "userIds": [
-//                 552952
-//             ]
-//         },
-//         {
-//             "id": 1497733,
-//             "title": "This is an issue of type: Task.",
-//             "type": "task",
-//             "status": "backlog",
-//             "priority": "4",
-//             "listPosition": 1,
-//             "createdAt": "2023-08-04T21:20:44.952Z",
-//             "updatedAt": "2023-08-04T21:20:44.952Z",
-//             "userIds": [
-//                 552952
-//             ]
-//         },
-//         {
-//             "id": 1497735,
-//             "title": "Try dragging issues to different columns to transition their status.",
-//             "type": "story",
-//             "status": "backlog",
-//             "priority": "3",
-//             "listPosition": 3,
-//             "createdAt": "2023-08-04T21:20:44.952Z",
-//             "updatedAt": "2023-08-04T21:20:44.952Z",
-//             "userIds": []
-//         },
-//         {
-//             "id": 1497736,
-//             "title": "You can use rich text with images in issue descriptions.",
-//             "type": "story",
-//             "status": "backlog",
-//             "priority": "1",
-//             "listPosition": 4,
-//             "createdAt": "2023-08-04T21:20:44.971Z",
-//             "updatedAt": "2023-08-04T21:20:44.971Z",
-//             "userIds": [
-//                 552954
-//             ]
-//         },
-//         {
-//             "id": 1497738,
-//             "title": "Each issue has a single reporter but can have multiple assignees.",
-//             "type": "story",
-//             "status": "selected",
-//             "priority": "4",
-//             "listPosition": 6,
-//             "createdAt": "2023-08-04T21:20:44.979Z",
-//             "updatedAt": "2023-08-04T21:20:44.979Z",
-//             "userIds": [
-//                 552953,
-//                 552954
-//             ]
-//         },
-//         {
-//             "id": 1497739,
-//             "title": "Try leaving a comment on this issue.",
-//             "type": "task",
-//             "status": "done",
-//             "priority": "3",
-//             "listPosition": 7,
-//             "createdAt": "2023-08-04T21:20:44.984Z",
-//             "updatedAt": "2023-08-04T21:20:44.984Z",
-//             "userIds": [
-//                 552953
-//             ]
-//         },
-//         {
-//             "id": 1497740,
-//             "title": "You can track how many hours were spent working on an issue, and how many hours remain.",
-//             "type": "task",
-//             "status": "inprogress",
-//             "priority": "1",
-//             "listPosition": 7,
-//             "createdAt": "2023-08-04T21:20:44.987Z",
-//             "updatedAt": "2023-08-04T21:20:44.987Z",
-//             "userIds": []
-//         },
-//         {
-//             "id": 1497737,
-//             "title": "Each issue can be assigned priority from lowest to highest.",
-//             "type": "task",
-//             "status": "selected",
-//             "priority": "5",
-//             "listPosition": 5,
-//             "createdAt": "2023-08-04T21:20:44.971Z",
-//             "updatedAt": "2023-08-04T21:21:01.132Z",
-//             "userIds": []
-//         }
-//     ]
-// };
-  
+  getProjectList()
+}, []);
 
+useEffect(() => {
 
-  console.log(project);
+    fetchProject();
+}, [selectedProject]);
+
+const handleProjectChange = (event) => {
+  setselectedProject(event.target.value);
+};
   const updateLocalProjectIssues = (issueId, updatedFields) => {
     fetchProject();
     // setLocalData(currentData => ({
@@ -204,15 +73,34 @@ console.log(project);
     //   },
     // }));
   };
-
+  const project = data ? replaceKeysRecursively(data.find(project => project._id === selectedProject)) : null;
+  console.log("Projectselected requested")
+  console.log(selectedProject);
+  console.log(project);
   return (
     <ProjectPage>
-
+            <Header title="KANBAN BOARD" subtitle={projectsList  && projectsList.length>0 ? "Kanban Board Of "+projectsList.find(project => project._id === selectedProject).projectName : "Kanban Board "} />
+      <TextField
+                select
+                fullWidth
+                variant="filled"
+                label="Please select a Project"
+                name="Project"
+                value={selectedProject}
+                onChange={handleProjectChange}
+                sx={{ width: '400px' , marginBottom: '10px' }}
+              >
+                {projectsList.map(project => 
+                <MenuItem key={project._id} value={project._id}>{project.projectName}</MenuItem>
+                )}
+              </TextField>
+    { data &&
       <Board
         project={project}
         fetchProject={fetchProject}
         updateLocalProjectIssues={updateLocalProjectIssues}
       />
+    }
     </ProjectPage>
   );
 };

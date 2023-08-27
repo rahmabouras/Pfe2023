@@ -5,7 +5,6 @@ import { Modal } from 'scenes/kanban/shared/components';
 import useMergeState from 'scenes/kanban/shared/hooks/mergeState';
 import { Breadcrumbs } from 'scenes/kanban/shared/components';
 
-import Header from './Header';
 import Filters from './Filters';
 import Lists from './Lists';
 import IssueCreate from '../IssueCreate';
@@ -42,7 +41,6 @@ const ProjectBoard = ({ project, fetchProject, updateLocalProjectIssues }) => {
 
   return (
     <Fragment>
-      <Header />
       <Filters
         projectUsers={project.users}
         defaultFilters={defaultFilters}

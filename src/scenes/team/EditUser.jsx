@@ -1,15 +1,47 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
-import { Box, Button, TextField, useTheme, MenuItem } from "@mui/material";
+import {
+  Box,
+  Button,
+  TextField,
+  useTheme,
+  MenuItem,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Avatar,
+  useMediaQuery
+} from "@mui/material";
+import Avatar1 from "react-avatar-edit";
 import { Formik } from "formik";
 import { tokens } from "../../theme";
 import { Link, useNavigate } from "react-router-dom"; // <-- import useNavigate
 import * as yup from "yup";
-import useMediaQuery from "@mui/material/useMediaQuery";
 import Header from "../../components/Header";
+import DefaultProfileImage from "./defaultAvatar.png";
 
 const EditUser = () => {
+
+    // Utilities and Handlers
+    const getWindowSize = () => {
+      const { innerWidth, innerHeight } = window;
+      return { innerWidth, innerHeight };
+    };
+  
+    // States
+    const [img, setImg] = useState(null);
+    const [open, setOpen] = useState(false);
+    const [defaultImageBlob, setDefaultImageBlob] = useState(null);
+    const [windowSize, setWindowSize] = useState(getWindowSize());
+  
+    // Hooks
+    const isNonMobile = useMediaQuery("(min-width:600px)");
+    const theme = useTheme();
+    const colors = tokens(theme.palette.mode);
+    const navigate = useNavigate();
+
   const { id } = useParams(); // <-- get the user ID from the URL
   const [initialValues, setInitialValues] = useState({
     firstName: "",
@@ -19,10 +51,33 @@ const EditUser = () => {
     address: "",
     role: "employee",
   });
-  const isNonMobile = useMediaQuery("(min-width:600px)");
-  const theme = useTheme();
-  const colors = tokens(theme.palette.mode);
-  const navigate = useNavigate(); // <-- get navigate function
+
+  useEffect(() => {
+    axios.get(`http://localhost:3001/avatars/${id}`, { responseType: 'arraybuffer' })
+      .then(response => {
+        const blob = new Blob([response.data], { type: 'image/png' });
+        const imageUrl = URL.createObjectURL(blob);
+        setImg(imageUrl);
+      })
+      .catch(error => {
+        console.error("Error fetching avatar:", error);
+        setImg(DefaultProfileImage);
+      });
+  }, [id]);
+  
+
+
+    // Handle window resize
+    useEffect(() => {
+      window.addEventListener("resize", handleWindowResize);
+      return () => {
+        window.removeEventListener("resize", handleWindowResize);
+      };
+    }, []);
+
+    const handleWindowResize = () => {
+      setWindowSize(getWindowSize());
+    };
 
   // Call the API to get the user details when the component is first loaded
   useEffect(() => {
@@ -46,15 +101,61 @@ const EditUser = () => {
   const handleFormSubmit = (values, { setSubmitting }) => { 
     axios.put(`http://localhost:3000/api/users/${id}`, values) // <-- call the PUT API
       .then(response => {
-        console.log(response.data);
-        setSubmitting(false); // stop showing the submitting state in form
-        navigate("/users"); // navigate to /user
+
+        const uploadAvatar = (avatar) => {
+          const avatarData = new FormData();
+          avatarData.append('file', avatar);
+          axios.post(`http://localhost:3001/uploadavatar/${id}`, avatarData)
+              .then(() => {
+                  console.log('Avatar uploaded successfully');
+                  setSubmitting(false);
+                  navigate("/users");
+              })
+              .catch(error => {
+                  console.error(`Error uploading the avatar: ${error}`);
+                  setSubmitting(false);
+              });
+        };
+        
+        let avatarFile;
+        if (img) {
+          avatarFile = dataURLtoFile(img, `${id}.png`);
+          uploadAvatar(avatarFile);
+        } else if (defaultImageBlob) {
+          avatarFile = new File([defaultImageBlob], `${id}.png`, { type: 'image/png' });
+          uploadAvatar(avatarFile);
+        } else {
+          setSubmitting(false);
+          navigate("/users");
+        }        
       })
       .catch(error => {
         console.error(`There was an error updating the user: ${error}`);
-        setSubmitting(false); // stop showing the submitting state in form
+        setSubmitting(false); 
+        navigate("/users");
       });
   };
+
+  const dataURLtoFile = (dataurl, filename) => {
+    let arr = dataurl.split(','), 
+        mime = arr[0].match(/:(.*?);/)[1],
+        bstr = atob(arr[1]),
+        n = bstr.length, 
+        u8arr = new Uint8Array(n);
+        
+    while (n--) {
+        u8arr[n] = bstr.charCodeAt(n);
+    }
+    
+    return new File([u8arr], filename, {type:mime});
+}
+
+  // Dialog Handlers
+  const handleClickOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
+  const onCrop = view => setImg(view);
+  const onClose = () => setImg(null);
+  const saveImage = () => setOpen(false);
 
   return (
     <Box m="20px">
@@ -74,7 +175,22 @@ const EditUser = () => {
           handleChange,
           handleSubmit,
           isSubmitting,
-        }) => (
+          setFieldValue,
+        }) => {
+          const handleFileChange = (event) => {
+            const file = event.currentTarget.files[0];
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              setFieldValue("avatarPreviewUrl", reader.result);
+              setFieldValue("avatarUrl", "");
+            };
+            if (file) {
+              reader.readAsDataURL(file);
+            }
+          };
+          
+
+          return (
           <form onSubmit={handleSubmit}>
             <Box
               display="grid"
@@ -84,6 +200,48 @@ const EditUser = () => {
                 "& > div": { gridColumn: isNonMobile ? undefined : "span 4" },
               }}
             >
+                          <Box sx={{ gridColumn: "span 4", display:"flex", alignItems: "center" }}>
+
+
+<Avatar
+  sx={{ width: 120, height: 120, marginRight: 2 }}
+  alt="profile img"
+  src={
+    img ? img : `https://img.icons8.com/color/344/test-account.png`
+  }
+/>
+        <Button color="secondary" variant="outlined" sx={{
+          fontSize: "14px",
+          padding: "10px 20px",
+          margin: "5px",
+        }}
+        onClick={handleClickOpen}>
+        Change Profile Photo
+        </Button>
+
+  <Dialog
+    onClose={handleClose}
+    aria-labelledby="customized-dialog-title"
+    open={open}
+  >
+    <DialogTitle id="customized-dialog-title" onClose={handleClose}>
+      Update Image
+    </DialogTitle>
+    <DialogContent>
+      <Avatar1
+        width={windowSize.innerWidth > 900 ? 400 : 'auto'}
+        height={windowSize.innerWidth > 500 ? 400 : 150}
+        onCrop={onCrop}
+        onClose={onClose}
+      />
+    </DialogContent>
+    <DialogActions>
+      <Button autoFocus variant="contained" onClick={saveImage}>
+        Save
+      </Button>
+    </DialogActions>
+  </Dialog>
+      </Box>
               <TextField
                 fullWidth
                 variant="filled"
@@ -193,7 +351,7 @@ const EditUser = () => {
             </Button>
           </Box>
           </form>
-        )}
+        )}}
       </Formik>
     </Box>
   );

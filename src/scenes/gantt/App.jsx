@@ -12,7 +12,7 @@ const App = () => {
   const [view, setView] = React.useState(ViewMode.Day);
   const [tasks, setTasks] = React.useState([]);
   const [projectsList, setProjectsList] = React.useState([]);
-  const [selectedProject, setselectedProject] = React.useState(0);
+  const [selectedProject, setselectedProject] = React.useState(1);
   const [isChecked, setIsChecked] = React.useState(true);
   let columnWidth = 65;
   

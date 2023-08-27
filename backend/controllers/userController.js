@@ -41,7 +41,7 @@ exports.createUser = async (req, res) => {
     const newUser = await User.create({ _id: id, ...req.body });
     res.status(201).json(newUser);
   } catch (error) {
-    res.status(500).json({ error: 'Error creating user' });
+    res.status(500).json({ error: 'Error creating user', message: error.message });
   }
 };
 

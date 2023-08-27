@@ -54,6 +54,21 @@ const storage = multer.diskStorage({
 // Initialize upload middleware
 const upload = multer({ storage: storage });
 
+const storageAvatar = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, 'avatars/');
+  },
+  filename: (req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const originalName = path.basename(file.originalname, ext);
+    cb(null, originalName + ext); // Keep the original filename and extension
+  },
+  
+});
+
+// Initialize upload middleware
+const uploadAvatar = multer({ storage: storageAvatar });
+
 
 // Route to handle file upload
 app.post("/upload", upload.single("file"), (req, res) => {
@@ -69,6 +84,23 @@ app.post("/upload", upload.single("file"), (req, res) => {
 app.get('/uploads/:filename', function(req, res){
   const file = `uploads/${req.params.filename}`;
   res.download(file); // Set Content-Disposition
+});
+
+app.post("/uploadavatar/:userId", uploadAvatar.single("file"), async (req, res) => {
+  const userId = req.params.userId;
+  const file = req.file;
+
+  if (!file) {
+      return res.status(400).send("No file uploaded");
+  }
+
+  res.status(200).send({ message: 'Avatar uploaded successfully!' });
+});
+
+
+app.get('/avatars/:userId', function(req, res){
+  const file = `avatars/${req.params.userId}.png`;
+  res.download(file);
 });
 
 io.on("connection", (socket) => {
