@@ -1,13 +1,81 @@
+import React, { useEffect, useState } from 'react';
 import { ResponsiveLine } from "@nivo/line";
 import { useTheme } from "@mui/material";
 import { tokens } from "../theme";
-import { mockLineData as data } from "../data/mockData";
+import { mockLineData as data1} from "../data/mockData";
 
-const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
+const LineChart = ( {selectedYear}) => {
+  const [data, setData] = useState([]);
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  useEffect(() => {
+    fetch("http://localhost:3000/api/payments")
+      .then((response) => response.json())
+      .then((fetchedData) => {
+        const transformedData = transformData(fetchedData, selectedYear);
+        console.log(transformedData)
+        setData(transformedData);
+      })
+      .catch((error) => {
+        console.error("Error fetching data: ", error);
+      });
+  }, [selectedYear]);  // Note the added dependency on selectedYear
+
+  const transformData = (apiData, selectedYear) => {
+    const months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    
+    const cashInData = months.map(month => ({ x: month, y: 0 }));
+    const cashOutData = months.map(month => ({ x: month, y: 0 }));
+    const revenueData = months.map(month => ({ x: month, y: 0 }));
+  
+    // Your existing logic here
+    apiData.forEach(item => {
+      const dateObj = new Date(item.date);
+      const month = dateObj.toLocaleString('default', { month: 'long' }); // Get month name
+      const year = dateObj.getFullYear(); // Get year
+  
+      if (year !== selectedYear) return; // Skip if not the selected year
+  
+      const amount = item.amount;
+  
+      const cashInMonth = cashInData.find(data => data.x === month);
+      const cashOutMonth = cashOutData.find(data => data.x === month);
+  
+      if (item.cashin === 1 && cashInMonth) {
+        cashInMonth.y += amount;
+      } else if (cashOutMonth) {
+        cashOutMonth.y += amount;
+      }
+    });
+  
+    // Calculate revenueData based on cashInData and cashOutData
+    cashInData.forEach((data, index) => {
+      revenueData[index].y = data.y - cashOutData[index].y;
+    });
+  
+    return [
+      {
+        id: "Cash In",
+        color: colors.greenAccent[500],
+        data: cashInData,
+      },
+      {
+        id: "Cash Out",
+        color: colors.blueAccent[300],
+        data: cashOutData,
+      },
+      {
+        id: "Revenue",
+        color: colors.redAccent[200],
+        data: revenueData,
+      },
+    ];
+  };
+  
+
   return (
+    
     <ResponsiveLine
       data={data}
       theme={{
@@ -43,7 +111,7 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
           },
         },
       }}
-      colors={isDashboard ? { datum: "color" } : { scheme: "nivo" }} // added
+      colors={1===1 ? { datum: "color" } : { scheme: "nivo" }} // added
       margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
       xScale={{ type: "point" }}
       yScale={{
@@ -62,7 +130,7 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
         tickSize: 0,
         tickPadding: 5,
         tickRotation: 0,
-        legend: isDashboard ? undefined : "transportation", // added
+        legend: undefined,
         legendOffset: 36,
         legendPosition: "middle",
       }}
@@ -72,7 +140,7 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
         tickSize: 3,
         tickPadding: 5,
         tickRotation: 0,
-        legend: isDashboard ? undefined : "count", // added
+        legend: undefined,
         legendOffset: -40,
         legendPosition: "middle",
       }}
@@ -111,6 +179,7 @@ const LineChart = ({ isCustomLineColors = false, isDashboard = false }) => {
         },
       ]}
     />
+    
   );
 };
 

@@ -9,6 +9,9 @@ import Header from "../../components/Header";
 import IconButton from '@mui/material/IconButton';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
+import PrintIcon from '@mui/icons-material/Print';
+import TestInvoice from "./TestInvoice";
+
 
 const Payment = () => {
   const theme = useTheme();
@@ -21,6 +24,8 @@ const Payment = () => {
   const [payments, setpayments] = useState([]);
   const [open, setOpen] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [invoiceOpen, setInvoiceOpen] = useState(false);
+
 
   useEffect(() => {
     axios.get('http://localhost:3000/api/payments')
@@ -55,13 +60,24 @@ const Payment = () => {
     setOpen(false);
   };
 
+  const handlePrintClick = (id) => {
+    // Fetch the invoice data here (or just use the existing data you have)
+    // Show the invoice dialog
+    setInvoiceOpen(true);
+  };  
+
+  const handleDownloadInvoice = () => {
+    // Convert the invoice content to PDF or any format you like
+    // Provide a link for the user to download it
+  };
+  
+
   const columns = [
     { field: "_id", headerName: "ID" },
     {
       field: "date",
       headerName: "date",
       flex: 1,
-      cellClassName: "name-column--cell",
     },
     {
       field: "hhh",
@@ -108,11 +124,14 @@ const Payment = () => {
       field: "action",
       headerName: "Action",
       sortable: false,
-      width: 100,
+      flex: 1,
       disableClickEventBubbling: true,
       renderCell: (params) => {
         return (
           <div>
+            <IconButton aria-label="print" onClick={() => { handlePrintClick(params.row._id) }}>
+          <PrintIcon />
+            </IconButton>
             <IconButton aria-label="edit" onClick={() => { handleEditClick(params.row._id) }}>
               <EditIcon />
             </IconButton>
@@ -206,6 +225,33 @@ const Payment = () => {
             </Button>
           </DialogActions>
         </Dialog>
+        <Dialog open={invoiceOpen} onClose={() => setInvoiceOpen(false)} maxWidth="md" fullWidth>
+  <DialogContent>
+    <TestInvoice />
+    {/* Display the invoice data here */}
+    {/* This is where your Invoice component would go */}
+  </DialogContent>
+  <DialogActions>
+    {/* Add a button to download the invoice */}
+    <Button onClick={handleDownloadInvoice}             
+    sx={{
+      color: colors.grey[100],
+      fontSize: "14px",
+      padding: "10px 20px",
+    }}>
+      Download
+    </Button>
+    <Button onClick={() => setInvoiceOpen(false)}             
+    sx={{
+      color: colors.grey[100],
+      fontSize: "14px",
+      padding: "10px 20px",
+    }}>
+      Close
+    </Button>
+  </DialogActions>
+</Dialog>
+
       </Box>
     </Box>
   );

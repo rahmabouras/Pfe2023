@@ -1,0 +1,38 @@
+.invoice-container {
+  background: #ccc;
+  padding: 30px;
+  font-size: 0.6em;
+}
+
+.invoice-container h6 {
+  font-size: 1em;
+}
+
+.invoice-container .container {
+  width: 400px;
+  min-height: 1200px;
+}
+
+.invoice-container .invoice {
+  background: #fff;
+  width: 100%;
+  padding: 50px;
+}
+
+.invoice-container .logo {
+  width: 4cm;
+}
+
+.invoice-container .document-type {
+  text-align: right;
+  color: #444;
+}
+
+.invoice-container .conditions {
+  font-size: 0.7em;
+  color: #666;
+}
+
+.invoice-container .bottom-page {
+  font-size: 0.7em;
+}

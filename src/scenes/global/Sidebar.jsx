@@ -108,10 +108,10 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Mark Trump
+                  Walid Amor
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  Fancy Admin
+                  Administrator
                 </Typography>
               </Box>
             </Box>
@@ -150,7 +150,7 @@ const Sidebar = () => {
 </Typography>
 <Item title="Calendar" to="/calendar" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} />
 <Item title="Meetings" to="/meetings" icon={<GroupOutlinedIcon />} selected={selected} setSelected={setSelected} /> 
-  <Item title="Chat" to="/chat" icon={<ChatOutlinedIcon />} selected={selected} setSelected={setSelected} />
+  <Item title="Chat" to="/chat/4" icon={<ChatOutlinedIcon />} selected={selected} setSelected={setSelected} />
 <Item title="Contacts Information" to="/contacts" icon={<ContactsOutlinedIcon />} selected={selected} setSelected={setSelected} />
 
 
