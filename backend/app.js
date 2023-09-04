@@ -6,7 +6,8 @@ const uuid = require("uuid");
 const cors = require("cors");
 const { Server } = require("socket.io");
 const multer = require("multer");
-const mongoose = require("mongoose");
+const connectDB = require('./db');
+const Message = require('./models/Message');
 
 // Initialize Express App
 const app = express();
@@ -27,35 +28,20 @@ const io = new Server(server, {
   }
 });
 
+
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/project_management_system', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
-  console.log('Connected to MongoDB');
-}).catch(err => {
-  console.error('Connection error', err);
-});
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/project_management_system';
+connectDB(mongoUri);
 
 
-// Import the models
-const Customer = require('./models/Customer');
-const Vendor = require('./models/Vendor');
-const User = require('./models/User');
-const Message = require('./models/Message');
-const Conversation = require('./models/Conversation');
-const Project = require('./models/Project');
-const Issue = require('./models/Issue');
-const Payment = require('./models/Payment');
-const Contact = require('./models/Contact');
-const Event = require('./models/Event');
+
+
+
 
 // Define routes for each schema
 const customerRoutes = require('./routes/customerRoutes');
 const vendorRoutes = require('./routes/vendorRoutes');
 const userRoutes = require('./routes/userRoutes');
-const messageRoutes = require('./routes/messageRoutes');
-const conversationRoutes = require('./routes/conversationRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const issueRoutes = require('./routes/issueRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
@@ -65,8 +51,6 @@ const eventRoutes = require('./routes/eventRoutes');
 app.use('/api/customers', customerRoutes);
 app.use('/api/vendors', vendorRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/conversations', conversationRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/issues', issueRoutes);
 app.use('/api/payments', paymentRoutes);
@@ -187,3 +171,6 @@ io.on("connection", (socket) => {
 server.listen(5000, () => {
   console.log("Server running on port 5000");
 });
+
+
+module.exports = app;
