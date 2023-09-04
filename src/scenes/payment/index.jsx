@@ -28,7 +28,7 @@ const Payment = () => {
 
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/payments')
+    axios.get('http://localhost:5000/api/payments')
       .then(response => {
         const newpayments = response.data.map(payment => ({
           ...payment,
@@ -50,7 +50,7 @@ const Payment = () => {
   };
 
   const handleDelete = () => {
-    axios.delete(`http://localhost:3000/api/payments/${selectedId}`)
+    axios.delete(`http://localhost:5000/api/payments/${selectedId}`)
       .then(res => {
         console.log(res);
         console.log(res.data);

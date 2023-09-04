@@ -23,7 +23,7 @@ const Vendor = () => {
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/vendors')
+    axios.get('http://localhost:5000/api/vendors')
       .then(response => {
         const newVendors = response.data.map(vendor => ({
           ...vendor,
@@ -45,7 +45,7 @@ const Vendor = () => {
   };
 
   const handleDelete = () => {
-    axios.delete(`http://localhost:3000/api/vendors/${selectedId}`)
+    axios.delete(`http://localhost:5000/api/vendors/${selectedId}`)
       .then(res => {
         console.log(res);
         console.log(res.data);

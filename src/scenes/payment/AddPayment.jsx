@@ -25,7 +25,7 @@
       // Fetch projects
       const getProjects = async () => {
         try {
-          const response = await axios.get("http://localhost:3000/api/projects");
+          const response = await axios.get("http://localhost:5000/api/projects");
           setProjects(response.data);
         } catch (error) {
           console.error(`Error getting projects: ${error}`);
@@ -40,8 +40,8 @@
       // Fetch customers and vendors
       const fetchData = async () => {
         try {
-          const customersResponse = await axios.get("http://localhost:3000/api/customers");
-          const vendorsResponse = await axios.get("http://localhost:3000/api/vendors");
+          const customersResponse = await axios.get("http://localhost:5000/api/customers");
+          const vendorsResponse = await axios.get("http://localhost:5000/api/vendors");
           setCustomers(customersResponse.data);
           setVendors(vendorsResponse.data);
         } catch (error) {
@@ -64,7 +64,7 @@
 
     const handleFormSubmit = (values, { setSubmitting }) => { 
       console.log("Form values:", values); // Debugging line
-      axios.post('http://localhost:3000/api/payments', { ...values, cashin: selectedOption === "cashin" ? 1 : 0 })
+      axios.post('http://localhost:5000/api/payments', { ...values, cashin: selectedOption === "cashin" ? 1 : 0 })
         .then(response => {
           console.log(response.data);
           setSubmitting(false);

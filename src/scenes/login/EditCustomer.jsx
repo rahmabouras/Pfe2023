@@ -25,7 +25,7 @@ const EditCustomer = () => {
 
   // Call the API to get the customer details when the component is first loaded
   useEffect(() => {
-    axios.get(`http://localhost:3000/api/customers/${id}`)
+    axios.get(`http://localhost:5000/api/customers/${id}`)
       .then(response => {
         const customer = response.data;
         setInitialValues({
@@ -42,7 +42,7 @@ const EditCustomer = () => {
   }, [id]); // <-- run this useEffect when the `id` changes
 
   const handleFormSubmit = (values, { setSubmitting }) => { 
-    axios.put(`http://localhost:3000/api/customers/${id}`, values) // <-- call the PUT API
+    axios.put(`http://localhost:5000/api/customers/${id}`, values) // <-- call the PUT API
       .then(response => {
         console.log(response.data);
         setSubmitting(false); // stop showing the submitting state in form

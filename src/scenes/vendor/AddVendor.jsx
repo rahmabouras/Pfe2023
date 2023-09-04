@@ -14,7 +14,7 @@ const AddVendor = () => {
   const navigate = useNavigate(); // <-- get navigate function
 
   const handleFormSubmit = (values, { setSubmitting }) => { 
-    axios.post('http://localhost:3000/api/vendors', values)
+    axios.post('http://localhost:5000/api/vendors', values)
       .then(response => {
         console.log(response.data);
         setSubmitting(false); // stop showing the submitting state in form

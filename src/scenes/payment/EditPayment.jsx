@@ -43,7 +43,7 @@ const EditPayment = () => {
   
 
   useEffect(() => {
-axios.get(`http://localhost:3000/api/payments/${id}`).then(response =>
+axios.get(`http://localhost:5000/api/payments/${id}`).then(response =>
 {
         const payment = response.data;
         
@@ -66,9 +66,9 @@ axios.get(`http://localhost:3000/api/payments/${id}`).then(response =>
     const fetchData = async () => {
       try {
         const [projectsResponse, customersResponse, vendorsResponse] = await Promise.all([
-          axios.get("http://localhost:3000/api/projects"),
-          axios.get("http://localhost:3000/api/customers"),
-          axios.get("http://localhost:3000/api/vendors")
+          axios.get("http://localhost:5000/api/projects"),
+          axios.get("http://localhost:5000/api/customers"),
+          axios.get("http://localhost:5000/api/vendors")
         ]);
         
         setProjects(projectsResponse.data);
@@ -88,7 +88,7 @@ axios.get(`http://localhost:3000/api/payments/${id}`).then(response =>
   };
 
   const handleFormSubmit = (values, { setSubmitting }) => {
-    axios.put(`http://localhost:3000/api/payments/${id}`, { ...values, cashin: selectedOption === "cashin" ? 1 : 0 })
+    axios.put(`http://localhost:5000/api/payments/${id}`, { ...values, cashin: selectedOption === "cashin" ? 1 : 0 })
       .then(response => {
         console.log(response.data);
         setSubmitting(false);

@@ -53,7 +53,7 @@ const EditUser = () => {
   });
 
   useEffect(() => {
-    axios.get(`http://localhost:3001/avatars/${id}`, { responseType: 'arraybuffer' })
+    axios.get(`http://localhost:5000/avatars/${id}`, { responseType: 'arraybuffer' })
       .then(response => {
         const blob = new Blob([response.data], { type: 'image/png' });
         const imageUrl = URL.createObjectURL(blob);
@@ -81,7 +81,7 @@ const EditUser = () => {
 
   // Call the API to get the user details when the component is first loaded
   useEffect(() => {
-    axios.get(`http://localhost:3000/api/users/${id}`)
+    axios.get(`http://localhost:5000/api/users/${id}`)
       .then(response => {
         const user = response.data;
         setInitialValues({
@@ -99,13 +99,13 @@ const EditUser = () => {
   }, [id]); // <-- run this useEffect when the `id` changes
 
   const handleFormSubmit = (values, { setSubmitting }) => { 
-    axios.put(`http://localhost:3000/api/users/${id}`, values) // <-- call the PUT API
+    axios.put(`http://localhost:5000/api/users/${id}`, values) // <-- call the PUT API
       .then(response => {
 
         const uploadAvatar = (avatar) => {
           const avatarData = new FormData();
           avatarData.append('file', avatar);
-          axios.post(`http://localhost:3001/uploadavatar/${id}`, avatarData)
+          axios.post(`http://localhost:5000/uploadavatar/${id}`, avatarData)
               .then(() => {
                   console.log('Avatar uploaded successfully');
                   setSubmitting(false);

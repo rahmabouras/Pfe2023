@@ -23,7 +23,7 @@ const Project = () => {
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/projects')
+    axios.get('http://localhost:5000/api/projects')
       .then(response => {
         const newProjects = response.data.map(project => ({
           ...project,
@@ -50,7 +50,7 @@ const Project = () => {
   };
 
   const handleDelete = () => {
-    axios.delete(`http://localhost:3000/api/projects/${selectedId}`)
+    axios.delete(`http://localhost:5000/api/projects/${selectedId}`)
       .then(res => {
         console.log(res);
         console.log(res.data);

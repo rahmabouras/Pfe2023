@@ -25,7 +25,7 @@ const AddProject = () => {
     // Fetch customers
     const getCustomers = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/customers");
+        const response = await axios.get("http://localhost:5000/api/customers");
         setCustomers(response.data);
       } catch (error) {
         console.error(`Error getting customers: ${error}`);
@@ -34,7 +34,7 @@ const AddProject = () => {
     // Fetch all users
     const getUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/users");
+        const response = await axios.get("http://localhost:5000/api/users");
         setUsers(response.data);
       } catch (error) {
         console.error(`Error getting users: ${error}`);
@@ -49,7 +49,7 @@ const AddProject = () => {
 
 
   const handleFormSubmit = (values, { setSubmitting }) => {
-    axios.post('http://localhost:3000/api/projects', values)
+    axios.post('http://localhost:5000/api/projects', values)
       .then(response => {
         console.log(response);
         setSubmitting(false);

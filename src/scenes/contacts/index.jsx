@@ -23,7 +23,7 @@ const Contacts = () => {
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/contacts')
+    axios.get('http://localhost:5000/api/contacts')
       .then(response => {
         const newContacts = response.data.map(contact => ({
           ...contact,
@@ -45,7 +45,7 @@ const Contacts = () => {
   };
 
   const handleDelete = () => {
-    axios.delete(`http://localhost:3000/api/contacts/${selectedId}`)
+    axios.delete(`http://localhost:5000/api/contacts/${selectedId}`)
       .then(res => {
         console.log(res);
         console.log(res.data);

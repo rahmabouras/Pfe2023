@@ -23,7 +23,7 @@ const Customer = () => {
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/customers')
+    axios.get('http://localhost:5000/api/customers')
       .then(response => {
         const newCustomers = response.data.map(customer => ({
           ...customer,
@@ -45,7 +45,7 @@ const Customer = () => {
   };
 
   const handleDelete = () => {
-    axios.delete(`http://localhost:3000/api/customers/${selectedId}`)
+    axios.delete(`http://localhost:5000/api/customers/${selectedId}`)
       .then(res => {
         console.log(res);
         console.log(res.data);

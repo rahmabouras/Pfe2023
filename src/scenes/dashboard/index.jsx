@@ -56,7 +56,7 @@ const Dashboard = () => {
 
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/projects')
+    axios.get('http://localhost:5000/api/projects')
       .then(response => {
         const newProjects = response.data.map(project => ({
           ...project,

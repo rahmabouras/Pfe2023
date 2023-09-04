@@ -10,7 +10,7 @@ const LineChart = ( {selectedYear}) => {
   const colors = tokens(theme.palette.mode);
 
   useEffect(() => {
-    fetch("http://localhost:3000/api/payments")
+    fetch("http://localhost:5000/api/payments")
       .then((response) => response.json())
       .then((fetchedData) => {
         const transformedData = transformData(fetchedData, selectedYear);

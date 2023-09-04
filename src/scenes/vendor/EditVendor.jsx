@@ -25,7 +25,7 @@ const EditVendor = () => {
 
   // Call the API to get the vendor details when the component is first loaded
   useEffect(() => {
-    axios.get(`http://localhost:3000/api/vendors/${id}`)
+    axios.get(`http://localhost:5000/api/vendors/${id}`)
       .then(response => {
         const vendor = response.data;
         setInitialValues({
@@ -42,7 +42,7 @@ const EditVendor = () => {
   }, [id]); // <-- run this useEffect when the `id` changes
 
   const handleFormSubmit = (values, { setSubmitting }) => { 
-    axios.put(`http://localhost:3000/api/vendors/${id}`, values) // <-- call the PUT API
+    axios.put(`http://localhost:5000/api/vendors/${id}`, values) // <-- call the PUT API
       .then(response => {
         console.log(response.data);
         setSubmitting(false); // stop showing the submitting state in form

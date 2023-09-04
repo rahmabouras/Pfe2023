@@ -5,7 +5,7 @@ import { objectToQueryString } from 'scenes/kanban/shared/utils/url';
 import { getStoredAuthToken, removeStoredAuthToken } from 'scenes/kanban/shared/utils/authToken';
 
 const defaults = {
-  baseURL: process.env.API_URL || 'http://localhost:3000/api',
+  baseURL: process.env.API_URL || 'http://localhost:5000/api',
   headers: () => ({
     'Content-Type': 'application/json',
     Authorization: getStoredAuthToken() ? `Bearer ${getStoredAuthToken()}` : undefined,

@@ -5,7 +5,7 @@ export async function initTasks(id) {
 
   try {
     if (id !== 0) {
-    const response = await axios.get(`http://localhost:3000/api/projects/${id}`);
+    const response = await axios.get(`http://localhost:5000/api/projects/${id}`);
     project = response.data;
   }
   } catch (error) {

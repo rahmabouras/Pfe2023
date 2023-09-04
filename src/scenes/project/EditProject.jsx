@@ -33,7 +33,7 @@ const EditProject = () => {
 
 
   useEffect(() => {
-    axios.get(`http://localhost:3000/api/projects/${id}`)
+    axios.get(`http://localhost:5000/api/projects/${id}`)
       .then(response => {
         const project = response.data;
         setInitialValues({
@@ -60,7 +60,7 @@ const EditProject = () => {
     // Fetch customers
     const getCustomers = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/customers");
+        const response = await axios.get("http://localhost:5000/api/customers");
         setCustomers(response.data);
       } catch (error) {
         console.error(`Error getting customers: ${error}`);
@@ -69,7 +69,7 @@ const EditProject = () => {
     // Fetch all users
     const getUsers = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/users");
+        const response = await axios.get("http://localhost:5000/api/users");
         setUsers(response.data);
       } catch (error) {
         console.error(`Error getting users: ${error}`);
@@ -84,7 +84,7 @@ const EditProject = () => {
 
 
   const handleFormSubmit = (values, { setSubmitting }) => {
-    axios.put(`http://localhost:3000/api/projects/${id}`, values)
+    axios.put(`http://localhost:5000/api/projects/${id}`, values)
       .then(response => {
         console.log(response);
         setSubmitting(false);

@@ -26,7 +26,7 @@ const Team = () => {
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    axios.get('http://localhost:3000/api/users')
+    axios.get('http://localhost:5000/api/users')
       .then(response => {
         const newUsers = response.data.map(user => ({
           ...user,
@@ -49,7 +49,7 @@ const Team = () => {
   };
 
   const handleDelete = () => {
-    axios.delete(`http://localhost:3000/api/users/${selectedId}`)
+    axios.delete(`http://localhost:5000/api/users/${selectedId}`)
       .then(res => {
         console.log(res);
         console.log(res.data);

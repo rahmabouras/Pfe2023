@@ -46,7 +46,7 @@ const Project = () => {
 useEffect(() => {
 
   async function getProjectList() {
-    const response = await axios.get('http://localhost:3000/api/projects/list');
+    const response = await axios.get('http://localhost:5000/api/projects/list');
     setProjectsList(response.data);
     setselectedProject(response.data[0]._id);
     console.log("Projects requested")

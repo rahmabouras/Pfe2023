@@ -8,7 +8,7 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
 
-const socket = io.connect("http://localhost:3001");
+const socket = io.connect("http://localhost:5000");
 
 const Chat = () => {
   const theme = useTheme();
@@ -74,13 +74,13 @@ const Chat = () => {
 
   useEffect(() => {
       // Fetch users from the backend
-      axios.get('http://localhost:3000/api/users')
+      axios.get('http://localhost:5000/api/users')
           .then(response => {
               // Map the response data to the desired structure
               const mappedUsers = response.data.map(user => ({
                   id: user._id,
                   name: user.firstName,
-                  avatar: `http://localhost:3001/avatars/${user._id}`
+                  avatar: `http://localhost:5000/avatars/${user._id}`
               }));
   
               // Find the index of the user with the ID matching currentUserIndex
@@ -151,7 +151,7 @@ const handleFileUpload = () => {
       const formData = new FormData();
       formData.append("file", newFile, newName);
   
-      axios.post("http://localhost:3001/upload", formData).then((response) => {
+      axios.post("http://localhost:5000/upload", formData).then((response) => {
         console.log("File uploaded successfully");
         // You can further process the response as needed
         sendMessage(newName);
@@ -162,7 +162,7 @@ const handleFileUpload = () => {
 
   // Function to handle file download
   const handleFileDownload = (fileUrl) => {
-    const url = `http://localhost:3001${fileUrl}`; // Update the URL to point to your server
+    const url = `http://localhost:5000${fileUrl}`; // Update the URL to point to your server
     const link = document.createElement("a");
     link.href = url;
     link.setAttribute("download", "file"); // You might want to use the actual file name here
@@ -250,7 +250,7 @@ const handleFileUpload = () => {
                                 <Grid item xs={12}>
                                 <ListItemText align={currentUserIndex === parseInt(message.author) ? "right" : "left"} secondary={message.time}>{message.file && (
                                     (message.file.toLowerCase().endsWith(".jpg") || message.file.toLowerCase().endsWith(".jpeg") || message.file.toLowerCase().endsWith(".png")) ?
-                                    <img src={`http://localhost:3001${message.file}`} alt="attachment" style={{ maxWidth: "200px" }} />
+                                    <img src={`http://localhost:5000${message.file}`} alt="attachment" style={{ maxWidth: "200px" }} />
                                     :
                                     <a href="#" onClick={() => handleFileDownload(message.file)}>{message.message}</a>
                                     )}

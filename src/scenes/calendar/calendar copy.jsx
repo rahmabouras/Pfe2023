@@ -14,7 +14,7 @@ const Calendar = () => {
   const [currentEvents, setCurrentEvents] = useState([]);
 
   const fetchEvents = async () => {
-    const response = await fetch("http://localhost:3000/api/events");
+    const response = await fetch("http://localhost:5000/api/events");
     const data = await response.json();
     setCurrentEvents(data);
   };
@@ -30,7 +30,7 @@ const Calendar = () => {
     calendarApi.unselect();
 
     if (title) {
-      const response = await fetch("http://localhost:3000/api/events", {
+      const response = await fetch("http://localhost:5000/api/events", {
         method: "POST",
         headers: {
           "Content-Type": "application/json"
@@ -61,7 +61,7 @@ const Calendar = () => {
         `Are you sure you want to delete the event '${selected.event.title}'`
       )
     ) {
-      await fetch(`http://localhost:3000/api/events/${selected.event.extendedProps._id}`, {
+      await fetch(`http://localhost:5000/api/events/${selected.event.extendedProps._id}`, {
         method: "DELETE"
       });
       selected.event.remove();
@@ -69,7 +69,7 @@ const Calendar = () => {
   };
 
   const handleEventDrop = async (info) => {
-    await fetch(`http://localhost:3000/api/events/${info.event.extendedProps._id}`, {
+    await fetch(`http://localhost:5000/api/events/${info.event.extendedProps._id}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"

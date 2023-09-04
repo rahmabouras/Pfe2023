@@ -22,7 +22,7 @@ const App = () => {
   useEffect(() => {
 
     async function getProjectList() {
-      const response = await axios.get('http://localhost:3000/api/projects/list');
+      const response = await axios.get('http://localhost:5000/api/projects/list');
       setProjectsList(response.data);
       setselectedProject(response.data[0]._id);
     }
@@ -49,7 +49,7 @@ const App = () => {
 
   const updateIssue = async (issue) => {
     try {
-      const response = await axios.put(`http://localhost:3000/api/issues/${issue.id}`, {
+      const response = await axios.put(`http://localhost:5000/api/issues/${issue.id}`, {
         start: issue.start,
         end: issue.end,
         progress: Math.round(issue.progress)

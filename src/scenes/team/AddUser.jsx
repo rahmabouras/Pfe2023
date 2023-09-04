@@ -64,14 +64,14 @@ const AddUser = () => {
   };
 
   const handleFormSubmit = (values, { setSubmitting }) => {
-    axios.post('http://localhost:3000/api/users', values)
+    axios.post('http://localhost:5000/api/users', values)
       .then(response => {
           const userId = response.data._id; 
   
   const uploadAvatar = (avatar) => {
     const avatarData = new FormData();
     avatarData.append('file', avatar);
-    axios.post(`http://localhost:3001/uploadavatar/${userId}`, avatarData)
+    axios.post(`http://localhost:5000/uploadavatar/${userId}`, avatarData)
         .then(() => {
             console.log('Avatar uploaded successfully');
             setSubmitting(false);
