@@ -3,7 +3,7 @@ const Event = require('../models/Event');
 // Get all events
 exports.getAllEvents = async (req, res) => {
   try {
-    const events = await Event.find().populate('createdBy', 'name'); // Populate createdBy field with name only
+    const events = await Event.find().populate('createdBy'); 
     res.status(200).json(events);
   } catch (error) {
     res.status(500).json({ error: 'Error fetching events' });
@@ -13,7 +13,7 @@ exports.getAllEvents = async (req, res) => {
 // Get an event by ID
 exports.getEventById = async (req, res) => {
   try {
-    const event = await Event.findById(req.params.id).populate('createdBy', 'name'); // Populate createdBy field with name only
+    const event = await Event.findById(req.params.id).populate('createdBy'); 
     if (!event) {
       return res.status(404).json({ error: 'Event not found' });
     }
