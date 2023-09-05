@@ -56,13 +56,13 @@ const Sidebar = () => {
       roleLabel = 'Administrator';
       break;
     case 'manager':
-      roleLabel = 'Manager';
+      roleLabel = 'Project Manager';
       break;
     case 'employee':
       roleLabel = 'Employee';
       break;
     case 'finance':
-      roleLabel = 'Finance';
+      roleLabel = 'Finance Manager';
       break;
     default:
       roleLabel = 'Unknown Role';
