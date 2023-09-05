@@ -30,6 +30,10 @@ const userSchema = new mongoose.Schema({
     enum: ['admin', 'manager', 'finance', 'employee'],
     required: true
   },
+  password: {
+    type: String,
+    required: true
+  },
   avatarUrl: String,
 });
 
