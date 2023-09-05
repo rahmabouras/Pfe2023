@@ -35,6 +35,7 @@ import EditUser from "./scenes/team/EditUser";
 import GanttComponent from "./scenes/gantt";
 import Kanban from "./scenes/kanban";
 import TestInvoice from "scenes/payment/TestInvoice";
+import EarningReports from "scenes/earningreports";
 // import Home from "./scenes/home";
 
 function App() {
@@ -77,6 +78,8 @@ function App() {
               <Route path="/payment" element={<Payment />} />
               <Route path="/addpayment" element={<AddPayment />} />
               <Route path="/payment/:id" element={<EditPayement />} />
+
+              <Route path="/earningreports" element={<EarningReports />} />
 
               <Route path="/vendor" element={<Vendor />} />
               <Route path="/addvendor" element={<AddVendor />} />

@@ -141,7 +141,7 @@ const Sidebar = () => {
 <Item title="Customer" to="/customer" icon={<ContactsOutlinedIcon />} selected={selected} setSelected={setSelected} />
 <Item title="Vendor" to="/vendor" icon={<PersonOutlinedIcon />} selected={selected} setSelected={setSelected} />
 <Item title="Payments" to="/payment" icon={<ReceiptOutlinedIcon />} selected={selected} setSelected={setSelected} />
-<Item title="Earnings reports" to="/earnings" icon={<BarChartOutlinedIcon />} selected={selected} setSelected={setSelected} />
+<Item title="Earnings reports" to="/earningreports" icon={<BarChartOutlinedIcon />} selected={selected} setSelected={setSelected} />
 
 
 
