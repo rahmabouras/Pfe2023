@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
+import { useAuthUser } from 'react-auth-kit'
 import axios from 'axios';
 import io from "socket.io-client";
-import { useParams } from 'react-router-dom';
 import { Box, useTheme, Typography, Paper, Grid, Divider, TextField, List, ListItem, ListItemIcon, ListItemText, Avatar, Fab, IconButton, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions, Button } from "@mui/material";
 import SendIcon from "@mui/icons-material/Send";
 import AttachFileIcon from "@mui/icons-material/AttachFile";
@@ -14,7 +14,9 @@ const Chat = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [users, setUsers] = useState([]);
-  const { id } = useParams(); // Get the user ID from the route
+  const getUser = useAuthUser();
+  const user = getUser();
+  const id = user.user._id;
   const currentUserIndex = parseInt(id);
   const [selectedUser, setSelectedUser] = useState(null);
   const [currentMessage, setCurrentMessage] = useState("");
@@ -22,7 +24,8 @@ const Chat = () => {
   const [searchTerm, setSearchTerm] = useState("");
   const [open, setOpen] = useState(false);
   const messagesEndRef = useRef(null);
-
+  
+  console.log("current index: " + currentUserIndex);
 
   const sendMessage = async (filename) => {
     if (currentMessage !== "" || selectedFile) {
@@ -73,33 +76,42 @@ const Chat = () => {
 
 
   useEffect(() => {
-      // Fetch users from the backend
-      axios.get('http://localhost:5000/api/users')
-          .then(response => {
-              // Map the response data to the desired structure
-              const mappedUsers = response.data.map(user => ({
-                  id: user._id,
-                  name: user.firstName,
-                  avatar: `http://localhost:5000/avatars/${user._id}`
-              }));
+    // Fetch users from the backend
+    axios.get('http://localhost:5000/api/users')
+      .then(response => {
+        // Map the response data to the desired structure
+        const mappedUsers = response.data.map(user => ({
+          id: user._id,
+          name: user.firstName,
+          avatar: `http://localhost:5000/avatars/${user._id}`
+        }));
   
-              // Find the index of the user with the ID matching currentUserIndex
-              const currentUserIndexInArray = mappedUsers.findIndex(user => user.id === currentUserIndex);
+        // Find the index of the user with the ID matching currentUserIndex
+        const currentUserIndexInArray = mappedUsers.findIndex(user => user.id === currentUserIndex);
   
-              // If the user is found, move them to the beginning of the array
-              if (currentUserIndexInArray !== -1) {
-                  const currentUser = mappedUsers.splice(currentUserIndexInArray, 1)[0];
-                  mappedUsers.unshift(currentUser);
-              }
+        // If the user is found, move them to the beginning of the array
+        if (currentUserIndexInArray !== -1) {
+          const currentUser = mappedUsers.splice(currentUserIndexInArray, 1)[0];
+          mappedUsers.unshift(currentUser);
+        }
   
-              setUsers(mappedUsers);
-              handleUserClick(mappedUsers[1])
-              console.log(mappedUsers[1].id);
-          })
-          .catch(error => {
-              console.error("An error occurred while fetching user data:", error);
-          });
+        // Add logic here to find the user with the specific 'id' you want
+        const specialUserIndex = mappedUsers.findIndex(user => user.id === id); // Replace 'id' with the id of the user you want first.
+  
+        if (specialUserIndex !== -1) {
+          const specialUser = mappedUsers.splice(specialUserIndex, 1)[0];
+          mappedUsers.unshift(specialUser);
+        }
+  
+        setUsers(mappedUsers);
+        handleUserClick(mappedUsers[1])
+        console.log(mappedUsers[1].id);
+      })
+      .catch(error => {
+        console.error("An error occurred while fetching user data:", error);
+      });
   }, []);
+  
 
 
   const handleUserClick = (user) => {

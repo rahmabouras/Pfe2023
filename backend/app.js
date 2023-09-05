@@ -7,10 +7,20 @@ const cors = require("cors");
 const { Server } = require("socket.io");
 const multer = require("multer");
 const connectDB = require('./db');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const User = require('./models/User');
 const Message = require('./models/Message');
+
+require('dotenv').config();
+const jwtSecret = process.env.JWT_SECRET;
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET is not defined.');
+}
 
 // Initialize Express App
 const app = express();
+
 
 // Middlewares
 app.use(bodyParser.json());
@@ -166,6 +176,40 @@ io.on("connection", (socket) => {
     console.log("User Disconnected", socket.id);
   });
 });
+
+
+
+app.post('/api/login', async function(req, res) {
+  const { email, password } = req.body;
+  
+  // Find user by email
+  const user = await User.findOne({ email });
+
+  // User not found
+  if (!user) {
+    return res.status(400).json({ msg: 'User not found' });
+  }
+
+  // Validate password
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    return res.status(400).json({ msg: 'Invalid credentials' });
+  }
+
+  // Generate and return JWT
+  const payload = {
+    user: {
+      id: user.id,
+    },
+  };
+
+  jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
+    if (err) throw err;
+    res.json({ token: token , user: user });
+  });
+});
+
 
 // Server listener
 server.listen(5000, () => {
