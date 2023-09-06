@@ -51,9 +51,9 @@ const ProjectBoardIssueDetailsComment = ({ comment, fetchIssue }) => {
 
   return (
     <Comment data-testid="issue-comment">
-      <UserAvatar name={comment.user.name} avatarUrl={comment.user.avatarUrl} />
+      <UserAvatar name={comment.user.firstName} avatarUrl={comment.user.avatarUrl} />
       <Content>
-        <Username>{comment.user.name}</Username>
+        <Username>{comment.user.firstName}</Username>
         <CreatedAt>{formatDateTimeConversational(comment.createdAt)}</CreatedAt>
 
         {isFormOpen ? (

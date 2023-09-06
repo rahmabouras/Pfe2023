@@ -43,7 +43,7 @@ const ProjectBoardListIssue = ({ projectUsers, issue, index, openIssueDetails })
                     key={user.id}
                     size={24}
                     avatarUrl={user.avatarUrl}
-                    name={user.name}
+                    name={user.firstName}
                   />
                 ))}
               </Assignees>

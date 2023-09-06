@@ -15,8 +15,13 @@ const propTypes = {
 const ProjectBoardIssueDetailsAssigneesReporter = ({ issue, updateIssue, projectUsers }) => {
   const getUserById = userId => projectUsers.find(user => user.id === userId);
 
-  const userOptions = projectUsers.map(user => ({ value: user.id, label: user.name }));
-
+  const userOptions = projectUsers.map(user => ({ value: user.id, label: user.firstName }));
+  console.log("Project User: ");
+  console.log(projectUsers)
+  console.log("User Options: ");
+  console.log(userOptions);
+  console.log("issue: ");
+  console.log(issue);
   return (
     <Fragment>
       <SectionTitle>Assignees</SectionTitle>
@@ -60,8 +65,8 @@ const renderUser = (user, isSelectValue, removeOptionValue) => (
     withBottomMargin={!!removeOptionValue}
     onClick={() => removeOptionValue && removeOptionValue()}
   >
-    <Avatar avatarUrl={user.avatarUrl} name={user.name} size={24} />
-    <Username>{user.name}</Username>
+    <Avatar avatarUrl={user.avatarUrl} name={user.firstName} size={24} />
+    <Username>{user.firstName}</Username>
     {removeOptionValue && <Icon type="close" top={1} />}
   </User>
 );
