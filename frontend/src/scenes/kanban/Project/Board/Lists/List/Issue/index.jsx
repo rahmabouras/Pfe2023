@@ -42,7 +42,7 @@ const ProjectBoardListIssue = ({ projectUsers, issue, index, openIssueDetails })
                   <AssigneeAvatar
                     key={user.id}
                     size={24}
-                    avatarUrl={user.avatarUrl}
+                    avatarUrl={`http://localhost:5000/avatars/${user.id}`}
                     name={user.firstName}
                   />
                 ))}

@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { DragDropContext } from 'react-beautiful-dnd';
-
+import { useAuthUser } from 'react-auth-kit'
 import useCurrentUser from 'scenes/kanban/shared/hooks/currentUser';
 import api from 'scenes/kanban/shared/utils/api';
 import { moveItemWithinArray, insertItemIntoArray } from 'scenes/kanban/shared/utils/javascript';
@@ -17,7 +17,9 @@ const propTypes = {
 };
 
 const ProjectBoardLists = ({ project, filters, updateLocalProjectIssues, openIssueDetails }) => {
-  const { currentUserId } = useCurrentUser();
+  const getUser = useAuthUser();
+  const user = getUser();
+  const  currentUserId  = user.user._id;
 
   const handleIssueDrop = ({ draggableId, destination, source }) => {
     if (!isPositionChanged(source, destination)) return;
