@@ -11,7 +11,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import PrintIcon from '@mui/icons-material/Print';
 import TestInvoice from "./TestInvoice";
-
+import html2pdf from "html2pdf.js";
 
 const Payment = () => {
   const theme = useTheme();
@@ -67,9 +67,19 @@ const Payment = () => {
   };  
 
   const handleDownloadInvoice = () => {
-    // Convert the invoice content to PDF or any format you like
-    // Provide a link for the user to download it
-  };
+    const content = document.getElementById("invoice-content");
+    
+    const opt = {
+      margin: 0,
+      filename: 'Invoice.pdf',
+      image: { type: 'jpeg', quality: 0.98 },
+      html2canvas: { scale: 2 },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+    };
+    
+    html2pdf().from(content).set(opt).save();
+};
+
   
 
   const columns = [
@@ -143,6 +153,16 @@ const Payment = () => {
       }
     },
   ];
+
+
+
+
+
+
+
+
+  
+
 
   return (
     <Box m="20px">
@@ -225,12 +245,13 @@ const Payment = () => {
             </Button>
           </DialogActions>
         </Dialog>
-        <Dialog open={invoiceOpen} onClose={() => setInvoiceOpen(false)} maxWidth="md" fullWidth>
-  <DialogContent>
-    <TestInvoice />
-    {/* Display the invoice data here */}
-    {/* This is where your Invoice component would go */}
-  </DialogContent>
+        <Dialog open={invoiceOpen} onClose={() => setInvoiceOpen(false)} maxWidth="md" >
+      <DialogContent>
+        {/* Add an ID for the invoice content to easily select it for the PDF conversion */}
+        <div id="invoice-content">
+          <TestInvoice />
+        </div>
+      </DialogContent>
   <DialogActions>
     {/* Add a button to download the invoice */}
     <Button onClick={handleDownloadInvoice}             

@@ -96,7 +96,7 @@ function App() {
   <Route path="/projects" element={isAuthenticated() && ['manager'].includes(userRole) ? <Project /> : <Navigate to="/login" />} />
   <Route path="/addproject" element={isAuthenticated() && ['manager'].includes(userRole) ? <AddProject /> : <Navigate to="/login" />} />
   <Route path="/project/:id" element={isAuthenticated() && ['manager'].includes(userRole) ? <EditProject /> : <Navigate to="/login" />} />
-  <Route path="/form4" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <Geography /> : <Navigate to="/login" />} />
+  <Route path="/invoice" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <TestInvoice /> : <Navigate to="/login" />} />
 </Routes>
 
           </main>
