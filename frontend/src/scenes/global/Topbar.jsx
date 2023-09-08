@@ -10,7 +10,7 @@ import SettingsOutlinedIcon from "@mui/icons-material/SettingsOutlined";
 import PersonOutlinedIcon from "@mui/icons-material/PersonOutlined";
 import SearchIcon from "@mui/icons-material/Search";
 import { useAuthUser, useSignOut } from "react-auth-kit";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import Badge from "@mui/material/Badge";
 
 
@@ -24,6 +24,7 @@ const Topbar = ({socket}) => {
   const user = getUser();
   const id = user?.user?._id;
   const navigate = useNavigate();
+  const location = useLocation();
   const [anchorEl, setAnchorEl] = useState(null);
   const handleClick = (event) => setAnchorEl(event.currentTarget);
   const handleClose = () => setAnchorEl(null);
@@ -47,6 +48,7 @@ const Topbar = ({socket}) => {
   };
 
   useEffect(() => {
+    if (location.pathname !== '/chat') {
     socket.on("receive_notif", (data) => {
         console.log("notification received");
         console.log(data);
@@ -76,7 +78,10 @@ const Topbar = ({socket}) => {
     return () => {
         socket.off("receive_notif");
     };
-}, [socket]);
+  }
+  else {setNotifications([])}
+}, [socket, location.pathname]);
+
 
 
 
