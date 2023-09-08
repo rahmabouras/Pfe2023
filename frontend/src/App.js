@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Routes, Route } from "react-router-dom";
 import { useIsAuthenticated, useAuthUser } from 'react-auth-kit';
 import { Navigate } from "react-router-dom";
+import io from "socket.io-client";
 import Topbar from "./scenes/global/Topbar";
 import Sidebar from "./scenes/global/Sidebar";
 import Dashboard from "./scenes/dashboard";
@@ -49,6 +50,8 @@ function App() {
   const userRole = user?.user?.role;
 
   const isAuthenticated = useIsAuthenticated();
+  const socket = useMemo(() => io.connect("http://localhost:5000"), []);
+
 
   return (
 
@@ -59,13 +62,13 @@ function App() {
             {/* Sidebar and Topbar can be conditionally rendered based on `isAuthenticated` */}
             {isAuthenticated() && <Sidebar isSidebar={isSidebar} />}
             <main className="content">
-              {isAuthenticated() && <Topbar setIsSidebar={setIsSidebar} />}
+              {isAuthenticated() && <Topbar setIsSidebar={setIsSidebar} socket={socket} />}
              
               <Routes>
   <Route path="/login" element={<SignIn />} />
   
   <Route path="/" element={isAuthenticated() && ['finance'].includes(userRole) ? <Dashboard /> : <Navigate to="/login" />} />
-  <Route path="/chat/" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <Chat /> : <Navigate to="/login" />} />
+  <Route path="/chat/" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <Chat socket={socket} /> : <Navigate to="/login" />} />
   <Route path="/updateprofile/" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <EditProfile /> : <Navigate to="/login" />} />
   <Route path="/gantt/" element={isAuthenticated() && ['manager', 'employee'].includes(userRole) ? <GanttComponent /> : <Navigate to="/login" />} />
   <Route path="/invoice/" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <TestInvoice /> : <Navigate to="/login" />} />

@@ -8,9 +8,7 @@ import AttachFileIcon from "@mui/icons-material/AttachFile";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
 
-const socket = io.connect("http://localhost:5000");
-
-const Chat = () => {
+const Chat = ({socket}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [users, setUsers] = useState([]);

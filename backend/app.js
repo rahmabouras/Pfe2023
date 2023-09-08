@@ -168,6 +168,7 @@ io.on("connection", (socket) => {
       .catch(err => console.error('Error saving message', err));
   
     socket.to(data.room).emit("receive_message", data);
+    io.emit("receive_notif", data);
   });
   
   
