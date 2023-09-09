@@ -58,7 +58,7 @@ const ProjectBoardIssueDetailsAssigneesReporter = ({ issue, updateIssue, project
   );
 };
 
-const renderUser = (user, isSelectValue, removeOptionValue) => (
+const renderUser = (user, isSelectValue, removeOptionValue) => { if (user) { return (
   <User
     key={user.id}
     isSelectValue={isSelectValue}
@@ -69,7 +69,7 @@ const renderUser = (user, isSelectValue, removeOptionValue) => (
     <Username>{user.firstName}</Username>
     {removeOptionValue && <Icon type="close" top={1} />}
   </User>
-);
+)}};
 
 ProjectBoardIssueDetailsAssigneesReporter.propTypes = propTypes;
 

@@ -15,7 +15,8 @@ const propTypes = {
 
 const ProjectBoardListIssue = ({ projectUsers, issue, index, openIssueDetails }) => { // Add openIssueDetails here
   const assignees = issue.userIds.map(userId => projectUsers.find(user => user.id === userId));
-
+  console.log("aasignees =================================================================");
+  console.log(assignees);
   const handleIssueClick = () => { // Define the click handler
     openIssueDetails(issue.id);
   };
@@ -38,7 +39,7 @@ const ProjectBoardListIssue = ({ projectUsers, issue, index, openIssueDetails })
                 <IssuePriorityIcon priority={issue.priority} top={-1} left={4} />
               </div>
               <Assignees>
-                {assignees.length>0 && assignees.map(user => {if (!user) return null; (
+                {assignees.length>0 && assignees.map(user => {if (user) return (
                   <AssigneeAvatar
                     key={user.id}
                     size={24}
