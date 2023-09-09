@@ -30,7 +30,7 @@ const ProjectBoardIssueDetailsComment = ({ comment, fetchIssue }) => {
 
   const handleCommentDelete = async () => {
     try {
-      await api.delete(`/comments/${comment.id}`);
+      await api.delete(`/comments/${comment._id}`);
       await fetchIssue();
     } catch (error) {
       toast.error(error);
@@ -40,7 +40,7 @@ const ProjectBoardIssueDetailsComment = ({ comment, fetchIssue }) => {
   const handleCommentUpdate = async () => {
     try {
       setUpdating(true);
-      await api.put(`/comments/${comment.id}`, { body });
+      await api.put(`/comments/${comment._id}`, { body });
       await fetchIssue();
       setUpdating(false);
       setFormOpen(false);
@@ -51,9 +51,9 @@ const ProjectBoardIssueDetailsComment = ({ comment, fetchIssue }) => {
 
   return (
     <Comment data-testid="issue-comment">
-      <UserAvatar name={comment.user.firstName} avatarUrl={comment.user.avatarUrl} />
+      <UserAvatar name={comment.userId.firstName + " " + comment.userId.lastName} avatarUrl={`http://localhost:5000/avatars/${comment.userId[0]._id}`} />
       <Content>
-        <Username>{comment.user.firstName}</Username>
+        <Username>{comment.userId[0].firstName + " " + comment.userId[0].lastName}</Username>
         <CreatedAt>{formatDateTimeConversational(comment.createdAt)}</CreatedAt>
 
         {isFormOpen ? (

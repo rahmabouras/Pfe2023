@@ -65,7 +65,7 @@ const renderUser = (user, isSelectValue, removeOptionValue) => (
     withBottomMargin={!!removeOptionValue}
     onClick={() => removeOptionValue && removeOptionValue()}
   >
-    <Avatar avatarUrl={user.avatarUrl} name={user.firstName} size={24} />
+    <Avatar avatarUrl={`http://localhost:5000/avatars/${user.id}`} name={user.firstName} size={24} />
     <Username>{user.firstName}</Username>
     {removeOptionValue && <Icon type="close" top={1} />}
   </User>

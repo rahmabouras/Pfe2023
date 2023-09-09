@@ -38,14 +38,14 @@ const ProjectBoardListIssue = ({ projectUsers, issue, index, openIssueDetails })
                 <IssuePriorityIcon priority={issue.priority} top={-1} left={4} />
               </div>
               <Assignees>
-                {assignees.map(user => (
+                {assignees.length>0 && assignees.map(user => {if (!user) return null; (
                   <AssigneeAvatar
                     key={user.id}
                     size={24}
                     avatarUrl={`http://localhost:5000/avatars/${user.id}`}
                     name={user.firstName}
                   />
-                ))}
+                )})}
               </Assignees>
             </Bottom>
           </Issue>

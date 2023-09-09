@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { DragDropContext } from 'react-beautiful-dnd';
 import { useAuthUser } from 'react-auth-kit'
-import useCurrentUser from 'scenes/kanban/shared/hooks/currentUser';
 import api from 'scenes/kanban/shared/utils/api';
 import { moveItemWithinArray, insertItemIntoArray } from 'scenes/kanban/shared/utils/javascript';
 import { IssueStatus } from 'scenes/kanban/shared/constants/issues';
@@ -25,25 +24,27 @@ const ProjectBoardLists = ({ project, filters, updateLocalProjectIssues, openIss
     if (!isPositionChanged(source, destination)) return;
 
     const issueId = draggableId;
-    console.log(issueId);
-    const updatedFields = {     status: destination.droppableId,
-      
-           listPosition: calculateIssueListPosition(project.issues, destination, source, issueId),
-      
-           currentFields: project.issues.find(({ id }) => id === issueId),
-              setLocalData: fields => updateLocalProjectIssues(issueId, fields),
-      
-          }
-    console.log(updatedFields);
+    const updatedFields = {     
+      status: destination.droppableId,
+      listPosition: calculateIssueListPosition(project.issues, destination, source, issueId),
+    };
+    
+    // Optimistically update frontend state
+    updateLocalProjectIssues(issueId, updatedFields);
+
+    // Then make the API call
     api.optimisticUpdate(`/issues/${issueId}`, {
-      updatedFields: {
-        status: destination.droppableId,
-        listPosition: calculateIssueListPosition(project.issues, destination, source, issueId),
-      },
+      updatedFields,
       currentFields: project.issues.find(({ id }) => id === issueId),
       setLocalData: fields => updateLocalProjectIssues(issueId, fields),
+    }).catch(error => {
+        // If the API call fails, revert the frontend change
+        // You'll need the previous state for this; it might be contained in 'currentFields' or you may need to adjust your logic
+        updateLocalProjectIssues(issueId, /* some logic to get the previous state */);
+        alert('Failed to update issue position. Please try again.');
     });
-  };
+};
+
 
   return (
     <DragDropContext onDragEnd={handleIssueDrop}>

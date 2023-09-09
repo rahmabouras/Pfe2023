@@ -43,12 +43,9 @@ const ProjectBoardIssueDetails = ({
 const issue = {
   ...data,
   id: data._id,
-  comments: [],
-  users: [],
   reporterId: data.reporterId ? data.reporterId[0] : null,
   projectId: data.projectId ? data.projectId[0] : null
 };
-
 
   console.log(issue);
 

@@ -22,6 +22,7 @@ import {
   Actions,
   ActionButton,
 } from './Styles';
+import { useAuthUser } from 'react-auth-kit';
 
 const propTypes = {
   project: PropTypes.object.isRequired,
@@ -33,7 +34,9 @@ const propTypes = {
 const ProjectIssueCreate = ({ project, fetchProject, onCreate, modalClose }) => {
   const [{ isCreating }, createIssue] = useApi.post('/issues');
 
-  const { currentUserId } = useCurrentUser();
+  const getUser = useAuthUser();
+  const user = getUser();
+  const  currentUserId  = user.user._id;
 
   return (
     <Form
@@ -188,7 +191,7 @@ const renderUser = project => ({ value: userId, removeOptionValue }) => {
       withBottomMargin={!!removeOptionValue}
       onClick={() => removeOptionValue && removeOptionValue()}
     >
-      <Avatar size={20} avatarUrl={user.avatarUrl} name={user.firstName} />
+      <Avatar size={20} avatarUrl={`http://localhost:5000/avatars/${user.id}`} name={user.firstName} />
       <SelectItemLabel>{user.firstName}</SelectItemLabel>
       {removeOptionValue && <Icon type="close" top={2} />}
     </SelectItem>

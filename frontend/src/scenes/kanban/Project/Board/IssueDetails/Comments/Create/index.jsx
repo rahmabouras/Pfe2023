@@ -8,6 +8,7 @@ import toast from 'scenes/kanban/shared/utils/toast';
 import BodyForm from '../BodyForm';
 import ProTip from './ProTip';
 import { Create, UserAvatar, Right, FakeTextarea } from './Styles';
+import { useAuthUser } from 'react-auth-kit';
 
 const propTypes = {
   issueId: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
@@ -19,12 +20,15 @@ const ProjectBoardIssueDetailsCommentsCreate = ({ issueId, fetchIssue }) => {
   const [isCreating, setCreating] = useState(false);
   const [body, setBody] = useState('');
 
-  const { currentUser } = useCurrentUser();
+  const getUser = useAuthUser();
+  const user = getUser();
+  const  currentUserId  = user.user._id;
+  const  currentUserName  = user.user.firstName + " " + user.user.lastName;
 
   const handleCommentCreate = async () => {
     try {
       setCreating(true);
-      await api.post(`/comments`, { body, issueId, userId: currentUser.id });
+      await api.post(`/comments`, { body, issueId, userId: currentUserId });
       await fetchIssue();
       setFormOpen(false);
       setCreating(false);
@@ -36,7 +40,7 @@ const ProjectBoardIssueDetailsCommentsCreate = ({ issueId, fetchIssue }) => {
 
   return (
     <Create>
-      {currentUser && <UserAvatar name={currentUser.firstName} avatarUrl={currentUser.avatarUrl} />}
+      {currentUserId && <UserAvatar name={currentUserName} avatarUrl={`http://localhost:5000/avatars/${currentUserId}`} />}
       <Right>
         {isFormOpen ? (
           <BodyForm

@@ -35,7 +35,6 @@ const replaceKeysRecursively = (obj) => {
 
 const Project = () => {
   const [projectsList, setProjectsList] = useState([]);
-  const [users, setUsers] = useState([]);
   const [selectedProject, setselectedProject] = useState(1);
   const [{ data, error, setLocalData }, fetchProject] = useApi.get('/projects/');
 
@@ -53,17 +52,7 @@ useEffect(() => {
     console.log("Projects requested")
     console.log(response.data);
   }
-  async function getUserList() {
-    const response = await axios.get('http://localhost:5000/api/users/');
-    const userList = response.data.map(user => { return {...user, id: user._id, avatarUrl: `http://localhost:5000/avatars/${user._id}`}})
-    setUsers(userList);
-    console.log("Users requested")
-    console.log(userList);
-  }
-
-  getProjectList()
-  getUserList()
-
+  
   getProjectList()
 }, []);
 
@@ -84,7 +73,7 @@ const handleProjectChange = (event) => {
     //   },
     // }));
   };
-  const project = data && users.length > 0 ? {...replaceKeysRecursively(data.find(project => project._id === selectedProject)) ,users: users} : null;
+  const project = data ? replaceKeysRecursively(data.find(project => project._id === selectedProject)) : null;
   console.log("Projectselected requested")
   console.log(selectedProject);
   console.log(project);

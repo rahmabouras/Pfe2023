@@ -1,10 +1,24 @@
 const Project = require('../models/Project');
+const User = require('../models/User');
 
 // Get all projects
 exports.getAllProjects = async (req, res) => {
   try {
-    const projects = await Project.find().populate('customer').populate('manager').populate('users').populate('issues');
-    res.status(200).json(projects);
+    const projects = await Project.find().populate('customer').populate('manager').populate('issues');
+
+    // Fetch only users with role "employee" or "manager"
+    const users = await User.find({ role: { $in: ['employee', 'manager'] } });
+    
+    const projectList = projects.map(project => {
+      // Convert mongoose document to a plain JS object
+      const projectObj = project.toObject();
+
+      // Add users to the projectObj
+      projectObj.users = users;
+      return projectObj;
+    });
+
+    res.status(200).json(projectList);
   } catch (error) {
     res.status(500).json({ error: 'Error fetching projects' });
   }
