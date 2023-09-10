@@ -40,20 +40,35 @@ const getNextSequence = async (name) => {
 exports.createUser = async (req, res) => {
   try {
     // Get token from header
-    const token = req.headers.authorization.split(" ")[1];
+//    const token = req.headers.authorization.split(" ")[1];
 
     // Verify the token
-    jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
-      if (err) {
-        return res.status(401).json({ error: 'Unauthorized' });
-      }
+    // jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
+    //   if (err) {
+    //     return res.status(401).json({ error: 'Unauthorized' });
+    //   }
 
-      // Check if the role is 'admin'
-      if (decodedToken.role !== 'admin') {
-        return res.status(403).json({ error: 'Forbidden: Only admin can create users' });
-      }
+    //   // Check if the role is 'admin'
+    //   if (decodedToken.role !== 'admin') {
+    //     return res.status(403).json({ error: 'Forbidden: Only admin can create users' });
+    //   }
 
-      const id = await getNextSequence('user');
+    //   const id = await getNextSequence('user');
+    //   const { password } = req.body;
+
+    //   // Hashing the password
+    //   const salt = await bcrypt.genSalt(10);
+    //   const hashedPassword = await bcrypt.hash(password, salt);
+
+    //   const newUser = await User.create({
+    //     _id: id,
+    //     ...req.body,
+    //     password: hashedPassword // Storing the hashed password
+    //   });
+
+    //   res.status(201).json(newUser);
+    // });
+    const id = await getNextSequence('user');
       const { password } = req.body;
 
       // Hashing the password
@@ -67,7 +82,6 @@ exports.createUser = async (req, res) => {
       });
 
       res.status(201).json(newUser);
-    });
   } catch (error) {
     res.status(500).json({ error: 'Error creating user', message: error.message });
   }

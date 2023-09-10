@@ -80,7 +80,7 @@ const Chat = ({socket}) => {
         // Map the response data to the desired structure
         const mappedUsers = response.data.map(user => ({
           id: user._id,
-          name: user.firstName,
+          name: user.firstName + " " + user.lastName,
           avatar: `http://localhost:5000/avatars/${user._id}`
         }));
   
