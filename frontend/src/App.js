@@ -35,6 +35,15 @@ import EditUser from "./scenes/team/EditUser";
 import GanttComponent from "./scenes/gantt";
 import Kanban from "./scenes/kanban";
 import TestInvoice from "scenes/payment/TestInvoice";
+import Meet from "scenes/meet";
+import CreateMeeting from "scenes/meet/src/pages/CreateMeeting";
+import Dashboard1 from "scenes/meet/src/pages/Dashboard";
+import JoinMeeting from "scenes/meet/src/pages/JoinMeeting";
+import Login from "scenes/meet/src/pages/Login";
+import Meeting from "scenes/meet/src/pages/Meeting";
+import MyMeetings from "scenes/meet/src/pages/MyMeetings";
+import OneOnOneMeeting from "scenes/meet/src/pages/OneOnOneMeeting";
+import VideoConference from "scenes/meet/src/pages/VideoConference";
 // import Home from "./scenes/home";
 
 function App() {
@@ -52,10 +61,20 @@ function App() {
             <Routes>
               <Route path="/" element={<Dashboard />} />
               <Route path="/chat/:id" element={<Chat />} />
+              <Route path="/meet/*" element={<Meet />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/create" element={<CreateMeeting />} />
+              <Route path="/create1on1" element={<OneOnOneMeeting />} />
+              <Route path="/videoconference" element={<VideoConference />} />
+              <Route path="/mymeetings" element={<MyMeetings />} />
+              <Route path="/join/:id" element={<JoinMeeting />} />
+              <Route path="/meetings" element={<Meeting />} />
+              <Route path="/" element={<Dashboard1 />} />
+              <Route path="/login" element={<Login />} />
               <Route path="/gantt/" element={<GanttComponent />} />
               <Route path="/invoice/" element={<TestInvoice />} />
               <Route path="/kanban/" element={<Kanban />} />
-              <Route path="/login" element={<SignIn />} />
+              <Route path="/signin" element={<SignIn />} />
               <Route path="/users" element={<Team />} />
               <Route path="/adduser" element={<AddUser />} />
               <Route path="/user/:id" element={<EditUser />} />

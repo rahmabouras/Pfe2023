@@ -149,7 +149,7 @@ const Sidebar = () => {
   Collaboration
 </Typography>
 <Item title="Calendar" to="/calendar" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} />
-<Item title="Meetings" to="/meetings" icon={<GroupOutlinedIcon />} selected={selected} setSelected={setSelected} /> 
+<Item title="Meetings" to="/meet" icon={<GroupOutlinedIcon />} selected={selected} setSelected={setSelected} /> 
   <Item title="Chat" to="/chat/4" icon={<ChatOutlinedIcon />} selected={selected} setSelected={setSelected} />
 <Item title="Contacts Information" to="/contacts" icon={<ContactsOutlinedIcon />} selected={selected} setSelected={setSelected} />
 

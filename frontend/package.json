@@ -56,7 +56,14 @@
     "styled-components": "^6.0.7",
     "sweet-pubsub": "^1.1.2",
     "web-vitals": "^2.1.4",
-    "yup": "^0.32.11"
+    "yup": "^0.32.11",
+    "@elastic/datemath": "^5.0.3",
+    "@elastic/eui": "^70.2.0",
+    "@emotion/css": "^11.10.5",
+    "@zegocloud/zego-uikit-prebuilt": "^1.8.10",
+    "firebase": "^10.3.0",
+    "netlify-cli": "^12.2.0"
+
   },
   "scripts": {
     "start": "cross-env PORT=4000 react-scripts start",
