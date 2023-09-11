@@ -15,8 +15,6 @@ const propTypes = {
 
 const ProjectBoardListIssue = ({ projectUsers, issue, index, openIssueDetails }) => { // Add openIssueDetails here
   const assignees = issue.userIds.map(userId => projectUsers.find(user => user.id === userId));
-  console.log("aasignees =================================================================");
-  console.log(assignees);
   const handleIssueClick = () => { // Define the click handler
     openIssueDetails(issue.id);
   };

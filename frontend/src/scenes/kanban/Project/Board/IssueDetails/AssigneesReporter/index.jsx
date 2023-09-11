@@ -1,4 +1,4 @@
-import React, { Fragment } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import PropTypes from 'prop-types';
 
 import { Avatar, Select, Icon } from 'scenes/kanban/shared/components';
@@ -13,15 +13,18 @@ const propTypes = {
 };
 
 const ProjectBoardIssueDetailsAssigneesReporter = ({ issue, updateIssue, projectUsers }) => {
+  const [assignees, setAssignees] = useState(issue.userIds || []);
+  const [reporter, setReporter] = useState(issue.reporterId || null);
+
+  useEffect(() => {
+    // This will sync the local state with the parent component
+    updateIssue({ userIds: assignees, reporterId: reporter });
+  }, [assignees, reporter]);
+
   const getUserById = userId => projectUsers.find(user => user.id === userId);
 
   const userOptions = projectUsers.map(user => ({ value: user.id, label: user.firstName }));
-  console.log("Project User: ");
-  console.log(projectUsers)
-  console.log("User Options: ");
-  console.log(userOptions);
-  console.log("issue: ");
-  console.log(issue);
+
   return (
     <Fragment>
       <SectionTitle>Assignees</SectionTitle>
@@ -31,10 +34,10 @@ const ProjectBoardIssueDetailsAssigneesReporter = ({ issue, updateIssue, project
         dropdownWidth={343}
         placeholder="Unassigned"
         name="assignees"
-        value={issue.userIds}
+        value={assignees}
         options={userOptions}
         onChange={userIds => {
-          updateIssue({ userIds, users: userIds.map(getUserById) });
+          setAssignees(userIds);
         }}
         renderValue={({ value: userId, removeOptionValue }) =>
           renderUser(getUserById(userId), true, removeOptionValue)
@@ -48,9 +51,9 @@ const ProjectBoardIssueDetailsAssigneesReporter = ({ issue, updateIssue, project
         dropdownWidth={343}
         withClearValue={false}
         name="reporter"
-        value={issue.reporterId}
+        value={reporter}
         options={userOptions}
-        onChange={userId => updateIssue({ reporterId: userId })}
+        onChange={userId => setReporter(userId)}
         renderValue={({ value: userId }) => renderUser(getUserById(userId), true)}
         renderOption={({ value: userId }) => renderUser(getUserById(userId))}
       />
@@ -58,18 +61,22 @@ const ProjectBoardIssueDetailsAssigneesReporter = ({ issue, updateIssue, project
   );
 };
 
-const renderUser = (user, isSelectValue, removeOptionValue) => { if (user) { return (
-  <User
-    key={user.id}
-    isSelectValue={isSelectValue}
-    withBottomMargin={!!removeOptionValue}
-    onClick={() => removeOptionValue && removeOptionValue()}
-  >
-    <Avatar avatarUrl={`http://localhost:5000/avatars/${user.id}`} name={user.firstName} size={24} />
-    <Username>{user.firstName}</Username>
-    {removeOptionValue && <Icon type="close" top={1} />}
-  </User>
-)}};
+const renderUser = (user, isSelectValue, removeOptionValue) => {
+  if (user) {
+    return (
+      <User
+        key={user.id}
+        isSelectValue={isSelectValue}
+        withBottomMargin={!!removeOptionValue}
+        onClick={() => removeOptionValue && removeOptionValue()}
+      >
+        <Avatar avatarUrl={`http://localhost:5000/avatars/${user.id}`} name={user.firstName} size={24} />
+        <Username>{user.firstName}</Username>
+        {removeOptionValue && <Icon type="close" top={1} />}
+      </User>
+    );
+  }
+};
 
 ProjectBoardIssueDetailsAssigneesReporter.propTypes = propTypes;
 

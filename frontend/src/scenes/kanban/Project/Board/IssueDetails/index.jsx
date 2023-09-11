@@ -67,10 +67,18 @@ const issue = {
         updateLocalIssueDetails(fields);
         updateLocalProjectIssues(issue.id, fields);
       },
+    })
+    .then(() => {
+      // After the optimistic update succeeds, refetch issue and project data
+      fetchIssue();
+      fetchProject();
+    })
+    .catch(error => {
+      console.error('Failed to update issue:', error);
+      // Handle the error accordingly, possibly reverting the local optimistic update
     });
-
-    fetchIssue();
   };
+  
   
 
   return (

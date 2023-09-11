@@ -65,6 +65,10 @@ const ProjectBoardLists = ({ project, filters, updateLocalProjectIssues, openIss
 };
 
 const isPositionChanged = (destination, source) => {
+  console.log(`sources: ${source}`);
+  console.log(source);
+  console.log(`destination: ${destination}`);
+  console.log(destination);
   if (!destination) return false;
   const isSameList = destination.droppableId === source.droppableId;
   const isSamePosition = destination.index === source.index;
@@ -73,6 +77,8 @@ const isPositionChanged = (destination, source) => {
 
 const calculateIssueListPosition = (...args) => {
   const { prevIssue, nextIssue } = getAfterDropPrevNextIssue(...args);
+  console.log("prevIssue", prevIssue);
+  console.log("nextIssue", nextIssue);
   let position;
 
   if (!prevIssue && !nextIssue) {
@@ -95,6 +101,8 @@ const getAfterDropPrevNextIssue = (allIssues, destination, source, droppedIssueI
   const afterDropDestinationIssues = isSameList
     ? moveItemWithinArray(beforeDropDestinationIssues, droppedIssue, destination.index)
     : insertItemIntoArray(beforeDropDestinationIssues, droppedIssue, destination.index);
+
+    console.log(afterDropDestinationIssues);
 
   return {
     prevIssue: afterDropDestinationIssues[destination.index - 1],

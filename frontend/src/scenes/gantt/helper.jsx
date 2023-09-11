@@ -73,9 +73,6 @@ export async function initTasks(id) {
     displayOrder: tasks.length + 1,
   });
 
-  console.log("tasks =================================================");
-  console.log(tasks);
-
   return tasks;
 }
 
