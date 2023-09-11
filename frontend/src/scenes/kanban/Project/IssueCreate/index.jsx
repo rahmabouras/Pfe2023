@@ -11,7 +11,7 @@ import {
 import toast from 'scenes/kanban/shared/utils/toast';
 import useApi from 'scenes/kanban/shared/hooks/api';
 import useCurrentUser from 'scenes/kanban/shared/hooks/currentUser';
-import { Form, IssueTypeIcon, Icon, Avatar, IssuePriorityIcon } from 'scenes/kanban/shared/components';
+import { Form, IssueTypeIcon, Icon, Avatar, IssuePriorityIcon, DatePicker } from 'scenes/kanban/shared/components';
 
 import {
   FormHeading,
@@ -22,6 +22,7 @@ import {
   Actions,
   ActionButton,
 } from './Styles';
+import { useAuthUser } from 'react-auth-kit';
 
 const propTypes = {
   project: PropTypes.object.isRequired,
@@ -33,7 +34,9 @@ const propTypes = {
 const ProjectIssueCreate = ({ project, fetchProject, onCreate, modalClose }) => {
   const [{ isCreating }, createIssue] = useApi.post('/issues');
 
-  const { currentUserId } = useCurrentUser();
+  const getUser = useAuthUser();
+  const user = getUser();
+  const  currentUserId  = user.user._id;
 
   return (
     <Form
@@ -45,13 +48,25 @@ const ProjectIssueCreate = ({ project, fetchProject, onCreate, modalClose }) => 
         reporterId: currentUserId,
         userIds: [],
         priority: IssuePriority.MEDIUM,
+        start: '',
+        end: ''
       }}
       validations={{
         type: Form.is.required(),
         title: [Form.is.required(), Form.is.maxLength(200)],
         reporterId: Form.is.required(),
         priority: Form.is.required(),
+        start: [Form.is.required()],
+        end: [
+          Form.is.required(),
+          (value, values) => {
+            if (new Date(value) <= new Date(values.start)) {
+              return 'End Date must be after Start Date';
+            }
+          },
+        ],
       }}
+
       onSubmit={async (values, form) => {
         try {
           await createIssue({
@@ -59,6 +74,8 @@ const ProjectIssueCreate = ({ project, fetchProject, onCreate, modalClose }) => 
             status: IssueStatus.BACKLOG,
             projectId: project.id,
             users: values.userIds.map(id => ({ id })),
+            start: values.start,
+            end: values.end, 
           });
           await fetchProject();
           toast.success('Issue has been successfully created.');
@@ -113,6 +130,19 @@ const ProjectIssueCreate = ({ project, fetchProject, onCreate, modalClose }) => 
           renderOption={renderPriority}
           renderValue={renderPriority}
         />
+      <Form.Field.Input
+        type="date"
+        name="start"
+        label="Start Date"
+        tip="Select the start date for the issue."
+      />
+
+      <Form.Field.Input
+        type="date"
+        name="end"
+        label="End Date"
+        tip="Select the end date for the issue."
+      />
         <Actions>
           <ActionButton type="submit" variant="primary" isWorking={isCreating}>
             Create Issue
@@ -136,7 +166,7 @@ const priorityOptions = Object.values(IssuePriority).map(priority => ({
   label: IssuePriorityCopy[priority],
 }));
 
-const userOptions = project => project.users.map(user => ({ value: user.id, label: user.name }));
+const userOptions = project => project.users.map(user => ({ value: user.id, label: user.firstName }));
 
 const renderType = ({ value: type }) => (
   <SelectItem>
@@ -161,8 +191,8 @@ const renderUser = project => ({ value: userId, removeOptionValue }) => {
       withBottomMargin={!!removeOptionValue}
       onClick={() => removeOptionValue && removeOptionValue()}
     >
-      <Avatar size={20} avatarUrl={user.avatarUrl} name={user.name} />
-      <SelectItemLabel>{user.name}</SelectItemLabel>
+      <Avatar size={20} avatarUrl={`http://localhost:5000/avatars/${user.id}`} name={user.firstName} />
+      <SelectItemLabel>{user.firstName}</SelectItemLabel>
       {removeOptionValue && <Icon type="close" top={2} />}
     </SelectItem>
   );

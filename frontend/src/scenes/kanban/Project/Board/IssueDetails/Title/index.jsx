@@ -12,13 +12,17 @@ const propTypes = {
 };
 
 const ProjectBoardIssueDetailsTitle = ({ issue, updateIssue }) => {
-  const $titleInputRef = useRef();
+  const [title, setTitle] = useState(issue.title);
   const [error, setError] = useState(null);
 
-  const handleTitleChange = () => {
+  const handleTitleChange = (newTitle) => {
+    setTitle(newTitle);
+  };
+  
+
+  const handleBlur = () => {
     setError(null);
 
-    const title = $titleInputRef.current.value;
     if (title === issue.title) return;
 
     const errors = generateErrors({ title }, { title: [is.required(), is.maxLength(200)] });
@@ -35,9 +39,9 @@ const ProjectBoardIssueDetailsTitle = ({ issue, updateIssue }) => {
       <TitleTextarea
         minRows={1}
         placeholder="Short summary"
-        defaultValue={issue.title}
-        ref={$titleInputRef}
-        onBlur={handleTitleChange}
+        value={title}
+        onChange={handleTitleChange}
+        onBlur={handleBlur}
         onKeyDown={event => {
           if (event.keyCode === KeyCodes.ENTER) {
             event.target.blur();
@@ -48,6 +52,7 @@ const ProjectBoardIssueDetailsTitle = ({ issue, updateIssue }) => {
     </Fragment>
   );
 };
+
 
 ProjectBoardIssueDetailsTitle.propTypes = propTypes;
 

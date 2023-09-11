@@ -7,11 +7,15 @@ import listPlugin from "@fullcalendar/list";
 import { Box, List, ListItem, ListItemText, Typography, useTheme } from "@mui/material";
 import Header from "../../components/Header";
 import { tokens } from "../../theme";
+import { useAuthUser } from "react-auth-kit";
 
 const Calendar = () => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
   const [currentEvents, setCurrentEvents] = useState([]);
+  const getUser = useAuthUser();
+  const user = getUser();
+  const id = user.user._id;
 
   const fetchEvents = async () => {
     const response = await fetch("http://localhost:5000/api/events");
@@ -44,7 +48,7 @@ const Calendar = () => {
           description,
           start: selected.startStr,
           end: endDate.toISOString(),
-          createdBy: 1,
+          createdBy: id,
         })
       });
       
@@ -124,29 +128,38 @@ const handleEventDrop = async (info) => {
           <List>
             {currentEvents.map((event) => (
               <ListItem
-                key={event._id}
-                sx={{
-                  backgroundColor: colors.greenAccent[500],
-                  margin: "10px 0",
-                  borderRadius: "2px",
-                }}
-              >
-                <ListItemText
-                  primary={event.title}
-                  secondary={
-                    <Typography>
+              key={event._id}
+              sx={{
+                backgroundColor: colors.greenAccent[500],
+                margin: "10px 0",
+                borderRadius: "2px",
+              }}
+            >
+              <ListItemText
+                primary={
+                  <>
+                    <Typography variant="subtitle1">{event.title}</Typography>
+                    <Typography variant="caption">{`Created by: ${event.createdBy?.firstName} ${event.createdBy?.lastName}`}</Typography>
+                  </>
+                }
+                secondary={
+                  <>
+                    <Typography variant="body2">
                       {formatDate(event.start, {
                         year: "numeric",
                         month: "short",
                         day: "numeric",
-                        hour: 'numeric',
-                        minute: 'numeric',
-                        meridiem: 'short'
+                        hour: "numeric",
+                        minute: "numeric",
+                        meridiem: "short",
                       })}
                     </Typography>
-                  }
-                />
-              </ListItem>
+                    <Typography variant="body2">{event.description}</Typography>
+                  </>
+                }
+              />
+            </ListItem>
+
             ))}
           </List>
         </Box>

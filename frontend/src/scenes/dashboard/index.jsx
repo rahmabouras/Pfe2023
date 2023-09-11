@@ -144,7 +144,7 @@ const Dashboard = () => {
             title={getProjectCounts("Planned")}
             subtitle="Planned"
             progress={getProjectPercentage("Planned")/100}
-            increase={getProjectPercentage("Planned")}
+            increase={getProjectPercentage("Planned") + "%"}
             icon={
               <EmailIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
@@ -163,7 +163,7 @@ const Dashboard = () => {
             title={getProjectCounts("Progress")}
             subtitle="Progress"
             progress={getProjectPercentage("Progress")/100}
-            increase={getProjectPercentage("Progress")}
+            increase={getProjectPercentage("Progress") + "%"}
             icon={
               <PointOfSaleIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
@@ -182,7 +182,7 @@ const Dashboard = () => {
             title={getProjectCounts("Done")}
             subtitle="Done"
             progress={getProjectPercentage("Done")/100}
-            increase={getProjectPercentage("Done")}
+            increase={getProjectPercentage("Done") + "%"}
             icon={
               <PersonAddIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}
@@ -201,7 +201,7 @@ const Dashboard = () => {
             title={getProjectCounts("Closed")}
             subtitle="Closed"
             progress={getProjectPercentage("Closed")/100}
-            increase={getProjectPercentage("Closed")}
+            increase={getProjectPercentage("Closed") + "%"}
             icon={
               <TrafficIcon
                 sx={{ color: colors.greenAccent[600], fontSize: "26px" }}

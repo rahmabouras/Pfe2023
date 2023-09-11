@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useAuthUser } from 'react-auth-kit'
 import { ProSidebar, Menu, MenuItem } from "react-pro-sidebar";
 import { Box, IconButton, Typography, useTheme } from "@mui/material";
 import { Link } from "react-router-dom";
@@ -41,6 +42,31 @@ const Sidebar = () => {
   const colors = tokens(theme.palette.mode);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [selected, setSelected] = useState("Dashboard");
+  const getUser = useAuthUser();
+  const user = getUser();
+  const id = user.user._id;
+  const fullName = user.user.firstName + " " + user.user.lastName;
+  const role = user.user.role;
+ 
+  let roleLabel = '';
+  
+  // Assign a label based on the role
+  switch (role) {
+    case 'admin':
+      roleLabel = 'Administrator';
+      break;
+    case 'manager':
+      roleLabel = 'Project Manager';
+      break;
+    case 'employee':
+      roleLabel = 'Employee';
+      break;
+    case 'finance':
+      roleLabel = 'Finance Manager';
+      break;
+    default:
+      roleLabel = 'Unknown Role';
+  }
 
   return (
     <Box
@@ -81,7 +107,7 @@ const Sidebar = () => {
                 ml="15px"
               >
                 <Typography variant="h3" color={colors.grey[100]}>
-                  ADMINIS
+                  BIC
                 </Typography>
                 <IconButton onClick={() => setIsCollapsed(!isCollapsed)}>
                   <MenuOutlinedIcon />
@@ -97,7 +123,7 @@ const Sidebar = () => {
                   alt="profile-user"
                   width="100px"
                   height="100px"
-                  src={`../../assets/user.png`}
+                  src={`http://localhost:5000/avatars/${id}`}
                   style={{ cursor: "pointer", borderRadius: "50%" }}
                 />
               </Box>
@@ -108,17 +134,30 @@ const Sidebar = () => {
                   fontWeight="bold"
                   sx={{ m: "10px 0 0 0" }}
                 >
-                  Walid Amor
+                  {fullName}
                 </Typography>
                 <Typography variant="h5" color={colors.greenAccent[500]}>
-                  Administrator
+                  {roleLabel}
                 </Typography>
               </Box>
             </Box>
           )}
 
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
-         
+
+
+{role === 'admin' && (
+<>
+<Typography variant="h6" color={colors.grey[300]} sx={{ m: "15px 0 5px 20px" }}>
+  Administartor Operations
+</Typography>
+<Item title="Manage Users" to="/users" icon={<PeopleOutlinedIcon />} selected={selected} setSelected={setSelected} />
+<Item title="Contacts Information" to="/contacts" icon={<ContactsOutlinedIcon />} selected={selected} setSelected={setSelected} />
+</>
+)}
+
+
+{role === 'finance' && (       
 <Item
   title="Dashboard"
   to="/"
@@ -126,14 +165,22 @@ const Sidebar = () => {
   selected={selected}
   setSelected={setSelected}
 />
+)}
 
+{(role === 'manager' || role === 'employee') && (
+<>
 <Typography variant="h6" color={colors.grey[300]} sx={{ m: "15px 0 5px 20px" }}>
   Projects
 </Typography>
-<Item title="Project" to="/projects" icon={<ReceiptOutlinedIcon />} selected={selected} setSelected={setSelected} />
+{role === 'manager' && <Item title="Project" to="/projects" icon={<ReceiptOutlinedIcon />} selected={selected} setSelected={setSelected} /> }
 <Item title="Kanban Board" to="/kanban" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} />
 <Item title="Gantt Diagrams" to="/gantt" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} />
-<Item title="Manage Users" to="/users" icon={<PeopleOutlinedIcon />} selected={selected} setSelected={setSelected} />
+
+</>
+)}
+
+{role === 'finance' && (
+<>
 
 <Typography variant="h6" color={colors.grey[300]} sx={{ m: "15px 0 5px 20px" }}>
   Operations
@@ -141,17 +188,24 @@ const Sidebar = () => {
 <Item title="Customer" to="/customer" icon={<ContactsOutlinedIcon />} selected={selected} setSelected={setSelected} />
 <Item title="Vendor" to="/vendor" icon={<PersonOutlinedIcon />} selected={selected} setSelected={setSelected} />
 <Item title="Payments" to="/payment" icon={<ReceiptOutlinedIcon />} selected={selected} setSelected={setSelected} />
-<Item title="Earnings reports" to="/earnings" icon={<BarChartOutlinedIcon />} selected={selected} setSelected={setSelected} />
-
-
-
+<Item title="Earnings reports" to="/earningreports" icon={<BarChartOutlinedIcon />} selected={selected} setSelected={setSelected} />
+</>
+)}
 <Typography variant="h6" color={colors.grey[300]} sx={{ m: "15px 0 5px 20px" }}>
   Collaboration
 </Typography>
+<<<<<<< HEAD
 <Item title="Calendar" to="/calendar" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} />
 <Item title="Meetings" to="/meet" icon={<GroupOutlinedIcon />} selected={selected} setSelected={setSelected} /> 
   <Item title="Chat" to="/chat/4" icon={<ChatOutlinedIcon />} selected={selected} setSelected={setSelected} />
 <Item title="Contacts Information" to="/contacts" icon={<ContactsOutlinedIcon />} selected={selected} setSelected={setSelected} />
+=======
+<Item title="Chat" to="/chat" icon={<ChatOutlinedIcon />} selected={selected} setSelected={setSelected} />
+<Item title="Meetings" to="/meetings" icon={<GroupOutlinedIcon />} selected={selected} setSelected={setSelected} /> 
+<Item title="Calendar" to="/calendar" icon={<CalendarTodayOutlinedIcon />} selected={selected} setSelected={setSelected} />
+
+
+>>>>>>> a98793fb4e2a62c5dc9b96e3f55c063145ae9175
 
 
 

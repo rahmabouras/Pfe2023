@@ -43,12 +43,9 @@ const ProjectBoardIssueDetails = ({
 const issue = {
   ...data,
   id: data._id,
-  comments: [],
-  users: [],
   reporterId: data.reporterId ? data.reporterId[0] : null,
   projectId: data.projectId ? data.projectId[0] : null
 };
-
 
   console.log(issue);
 
@@ -70,10 +67,18 @@ const issue = {
         updateLocalIssueDetails(fields);
         updateLocalProjectIssues(issue.id, fields);
       },
+    })
+    .then(() => {
+      // After the optimistic update succeeds, refetch issue and project data
+      fetchIssue();
+      fetchProject();
+    })
+    .catch(error => {
+      console.error('Failed to update issue:', error);
+      // Handle the error accordingly, possibly reverting the local optimistic update
     });
-
-    fetchIssue();
   };
+  
   
 
   return (

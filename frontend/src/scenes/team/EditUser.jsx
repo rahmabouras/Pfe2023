@@ -50,6 +50,8 @@ const EditUser = () => {
     phoneNumber: "",
     address: "",
     role: "employee",
+    password: "",
+    confirmPassword: "",
   });
 
   useEffect(() => {
@@ -326,6 +328,32 @@ const EditUser = () => {
                   <MenuItem key={3} value="finance">FINANCE MANAGER</MenuItem>
                   <MenuItem key={4} value="employee">EMPLOYEE</MenuItem>
               </TextField>
+              <TextField
+    fullWidth
+    variant="filled"
+    type="password"
+    label="Password"
+    onBlur={handleBlur}
+    onChange={handleChange}
+    value={values.password}
+    name="password"
+    error={!!touched.password && !!errors.password}
+    helperText={touched.password && errors.password}
+    sx={{ gridColumn: "span 2" }}
+  />
+  <TextField
+    fullWidth
+    variant="filled"
+    type="password"
+    label="Confirm Password"
+    onBlur={handleBlur}
+    onChange={handleChange}
+    value={values.confirmPassword}
+    name="confirmPassword"
+    error={!!touched.confirmPassword && !!errors.confirmPassword}
+    helperText={touched.confirmPassword && errors.confirmPassword}
+    sx={{ gridColumn: "span 2" }}
+  />
             </Box>
             <Box display="flex" justifyContent="end" mt="20px">
             <Button
@@ -370,6 +398,17 @@ const checkoutSchema = yup.object().shape({
     .required("required"),
   address: yup.string().required("required"),
   role: yup.string().required("required"),
+  password: yup
+  .string()
+  .matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+    "Must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
+  )
+  .required("required"),
+confirmPassword: yup
+  .string()
+  .oneOf([yup.ref("password"), null], "Passwords must match")
+  .required("required"),
 });
 
 export default EditUser;

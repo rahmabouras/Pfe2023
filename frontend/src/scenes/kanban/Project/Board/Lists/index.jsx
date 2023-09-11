@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { DragDropContext } from 'react-beautiful-dnd';
-
-import useCurrentUser from 'scenes/kanban/shared/hooks/currentUser';
+import { useAuthUser } from 'react-auth-kit'
 import api from 'scenes/kanban/shared/utils/api';
 import { moveItemWithinArray, insertItemIntoArray } from 'scenes/kanban/shared/utils/javascript';
 import { IssueStatus } from 'scenes/kanban/shared/constants/issues';
@@ -17,31 +16,35 @@ const propTypes = {
 };
 
 const ProjectBoardLists = ({ project, filters, updateLocalProjectIssues, openIssueDetails }) => {
-  const { currentUserId } = useCurrentUser();
+  const getUser = useAuthUser();
+  const user = getUser();
+  const  currentUserId  = user.user._id;
 
   const handleIssueDrop = ({ draggableId, destination, source }) => {
     if (!isPositionChanged(source, destination)) return;
 
     const issueId = draggableId;
-    console.log(issueId);
-    const updatedFields = {     status: destination.droppableId,
-      
-           listPosition: calculateIssueListPosition(project.issues, destination, source, issueId),
-      
-           currentFields: project.issues.find(({ id }) => id === issueId),
-              setLocalData: fields => updateLocalProjectIssues(issueId, fields),
-      
-          }
-    console.log(updatedFields);
+    const updatedFields = {     
+      status: destination.droppableId,
+      listPosition: calculateIssueListPosition(project.issues, destination, source, issueId),
+    };
+    
+    // Optimistically update frontend state
+    updateLocalProjectIssues(issueId, updatedFields);
+
+    // Then make the API call
     api.optimisticUpdate(`/issues/${issueId}`, {
-      updatedFields: {
-        status: destination.droppableId,
-        listPosition: calculateIssueListPosition(project.issues, destination, source, issueId),
-      },
+      updatedFields,
       currentFields: project.issues.find(({ id }) => id === issueId),
       setLocalData: fields => updateLocalProjectIssues(issueId, fields),
+    }).catch(error => {
+        // If the API call fails, revert the frontend change
+        // You'll need the previous state for this; it might be contained in 'currentFields' or you may need to adjust your logic
+        updateLocalProjectIssues(issueId, /* some logic to get the previous state */);
+        alert('Failed to update issue position. Please try again.');
     });
-  };
+};
+
 
   return (
     <DragDropContext onDragEnd={handleIssueDrop}>
@@ -62,6 +65,10 @@ const ProjectBoardLists = ({ project, filters, updateLocalProjectIssues, openIss
 };
 
 const isPositionChanged = (destination, source) => {
+  console.log(`sources: ${source}`);
+  console.log(source);
+  console.log(`destination: ${destination}`);
+  console.log(destination);
   if (!destination) return false;
   const isSameList = destination.droppableId === source.droppableId;
   const isSamePosition = destination.index === source.index;
@@ -70,6 +77,8 @@ const isPositionChanged = (destination, source) => {
 
 const calculateIssueListPosition = (...args) => {
   const { prevIssue, nextIssue } = getAfterDropPrevNextIssue(...args);
+  console.log("prevIssue", prevIssue);
+  console.log("nextIssue", nextIssue);
   let position;
 
   if (!prevIssue && !nextIssue) {
@@ -92,6 +101,8 @@ const getAfterDropPrevNextIssue = (allIssues, destination, source, droppedIssueI
   const afterDropDestinationIssues = isSameList
     ? moveItemWithinArray(beforeDropDestinationIssues, droppedIssue, destination.index)
     : insertItemIntoArray(beforeDropDestinationIssues, droppedIssue, destination.index);
+
+    console.log(afterDropDestinationIssues);
 
   return {
     prevIssue: afterDropDestinationIssues[destination.index - 1],

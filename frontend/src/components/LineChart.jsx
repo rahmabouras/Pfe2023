@@ -9,12 +9,14 @@ const LineChart = ( {selectedYear}) => {
   const theme = useTheme();
   const colors = tokens(theme.palette.mode);
 
+  console.log("The ligne data =")
+  console.log(data)
+
   useEffect(() => {
     fetch("http://localhost:5000/api/payments")
       .then((response) => response.json())
       .then((fetchedData) => {
         const transformedData = transformData(fetchedData, selectedYear);
-        console.log(transformedData)
         setData(transformedData);
       })
       .catch((error) => {
@@ -118,7 +120,7 @@ const LineChart = ( {selectedYear}) => {
         type: "linear",
         min: "auto",
         max: "auto",
-        stacked: true,
+        stacked: false,
         reverse: false,
       }}
       yFormat=" >-.2f"

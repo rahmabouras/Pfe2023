@@ -20,6 +20,7 @@ const issueSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   projectId: [{ type: Number, ref: 'Project' }],
+  comments: [{ type: Number, ref: 'Comment' }],
   reporterId: [{ type: Number, ref: 'User' }],
   userIds: [{ type: Number, ref: 'User' }],
 });

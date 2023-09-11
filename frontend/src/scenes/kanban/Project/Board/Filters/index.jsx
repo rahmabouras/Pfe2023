@@ -38,8 +38,8 @@ const ProjectBoardFilters = ({ projectUsers, defaultFilters, filters, mergeFilte
         {projectUsers.length>0 && projectUsers.map(user => (
           <AvatarIsActiveBorder key={user.id} isActive={userIds.includes(user.id)}>
             <StyledAvatar
-              avatarUrl={user.avatarUrl}
-              name={user.name}
+              avatarUrl={`http://localhost:5000/avatars/${user.id}`}
+              name={user.firstName}
               onClick={() => mergeFilters({ userIds: xor(userIds, [user.id]) })}
             />
           </AvatarIsActiveBorder>

@@ -1,7 +1,5 @@
 import { createGlobalStyle } from 'styled-components';
 
-import { color, font, mixin } from 'scenes/kanban/shared/utils/styles';
-
 export default createGlobalStyle`
   html, body, #root {
     height: 100%;
@@ -10,11 +8,11 @@ export default createGlobalStyle`
   }
 
   body {
-    color: ${color.textDarkest};
+    color: #000; !important;
     -webkit-tap-highlight-color: transparent;
     line-height: 1.2;
-    ${font.size(16)}
-    ${font.regular}
+    font-size: 16px;
+    font-weight: 400; // Assuming 'font.regular' sets font weight to regular
   }
 
   #root {
@@ -27,7 +25,7 @@ export default createGlobalStyle`
   optgroup,
   select,
   textarea {
-    ${font.regular}
+    font-weight: 400; // Assuming 'font.regular' sets font weight to regular
   }
 
   *, *:after, *:before, input[type="search"] {
@@ -49,7 +47,7 @@ export default createGlobalStyle`
   }
 
   h1, h2, h3, h4, h5, h6, strong {
-    ${font.bold}
+    font-weight: 700; // Assuming 'font.bold' sets font weight to bold
   }
 
   button {
@@ -83,13 +81,14 @@ export default createGlobalStyle`
     display: none;
   }
   select option {
-    color: ${color.textDarkest};
+    color: #000; !important;
   }
 
   p {
     line-height: 1.4285;
     a {
-      ${mixin.link()}
+      color: #000; !important;
+      text-decoration: underline; // If mixin.link() sets an underline
     }
   }
 
@@ -106,5 +105,8 @@ export default createGlobalStyle`
     touch-action: manipulation;
   }
 
-  ${mixin.placeholderColor(color.textLight)}
+  /* Assuming 'mixin.placeholderColor' sets the placeholder color */
+  ::placeholder {
+    color: #A9A9A9; !important;
+  }
 `;

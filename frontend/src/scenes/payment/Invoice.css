@@ -1,38 +1,38 @@
-.invoice-container {
+body {
   background: #ccc;
-  padding: 30px;
   font-size: 0.6em;
 }
 
-.invoice-container h6 {
+.invoice-container {
+  width: 21cm; /* width of A4 */
+  background: #ccc;
+  padding: 0; /* Give ample space from the edges */
+}
+
+h6, .invoice-container h6 {
   font-size: 1em;
 }
 
-.invoice-container .container {
-  width: 400px;
-  min-height: 1200px;
-}
-
-.invoice-container .invoice {
+.invoice {
   background: #fff;
-  width: 100%;
-  padding: 50px;
+  width: 100%; /* Take full width of the container */
+  padding: 2cm; /* Give ample space from the edges */
 }
 
-.invoice-container .logo {
-  width: 4cm;
+.logo {
+  width: 6cm;
 }
 
-.invoice-container .document-type {
+.document-type {
   text-align: right;
   color: #444;
 }
 
-.invoice-container .conditions {
+.conditions, .bottom-page {
   font-size: 0.7em;
   color: #666;
 }
 
-.invoice-container .bottom-page {
-  font-size: 0.7em;
+.invoice-container * {
+  color: black !important; /* Ensure all texts are black */
 }

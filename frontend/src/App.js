@@ -1,5 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { Routes, Route } from "react-router-dom";
+import { useIsAuthenticated, useAuthUser } from 'react-auth-kit';
+import { Navigate } from "react-router-dom";
+import io from "socket.io-client";
 import Topbar from "./scenes/global/Topbar";
 import Sidebar from "./scenes/global/Sidebar";
 import Dashboard from "./scenes/dashboard";
@@ -35,6 +38,7 @@ import EditUser from "./scenes/team/EditUser";
 import GanttComponent from "./scenes/gantt";
 import Kanban from "./scenes/kanban";
 import TestInvoice from "scenes/payment/TestInvoice";
+<<<<<<< HEAD
 import Meet from "scenes/meet";
 import CreateMeeting from "scenes/meet/src/pages/CreateMeeting";
 import Dashboard1 from "scenes/meet/src/pages/Dashboard";
@@ -44,12 +48,20 @@ import Meeting from "scenes/meet/src/pages/Meeting";
 import MyMeetings from "scenes/meet/src/pages/MyMeetings";
 import OneOnOneMeeting from "scenes/meet/src/pages/OneOnOneMeeting";
 import VideoConference from "scenes/meet/src/pages/VideoConference";
+=======
+import EarningReports from "scenes/earningreports";
+import EditProfile from "scenes/global/EditProfile";
+>>>>>>> a98793fb4e2a62c5dc9b96e3f55c063145ae9175
 // import Home from "./scenes/home";
 
 function App() {
   const [theme, colorMode] = useMode();
   const [isSidebar, setIsSidebar] = useState(true);
+  const getUser = useAuthUser();
+  const user = getUser();
+  const userRole = user?.user?.role;
 
+<<<<<<< HEAD
   return (
     <ColorModeContext.Provider value={colorMode}>
       <ThemeProvider theme={theme}>
@@ -89,25 +101,61 @@ function App() {
               <Route path="/customer" element={<Customer />} />
               <Route path="/addcustomer" element={<AddCustomer />} />
               <Route path="/customer/:id" element={<EditCustomer />} />
+=======
+  const isAuthenticated = useIsAuthenticated();
+  const socket = useMemo(() => io.connect("http://localhost:5000"), []);
+>>>>>>> a98793fb4e2a62c5dc9b96e3f55c063145ae9175
 
-              <Route path="/addcontact" element={<AddContact />} />
-              <Route path="/contact/:id" element={<EditContact />} />
 
-              <Route path="/payment" element={<Payment />} />
-              <Route path="/addpayment" element={<AddPayment />} />
-              <Route path="/payment/:id" element={<EditPayement />} />
+  return (
 
-              <Route path="/vendor" element={<Vendor />} />
-              <Route path="/addvendor" element={<AddVendor />} />
-              <Route path="/vendor/:id" element={<EditVendor />} />
+      <ColorModeContext.Provider value={colorMode}>
+        <ThemeProvider theme={theme}>
+          <CssBaseline />
+          <div className="app">
+            {/* Sidebar and Topbar can be conditionally rendered based on `isAuthenticated` */}
+            {isAuthenticated() && <Sidebar isSidebar={isSidebar} />}
+            <main className="content">
+              {isAuthenticated() && <Topbar setIsSidebar={setIsSidebar} socket={socket} />}
+             
+              <Routes>
+  <Route path="/login" element={<SignIn />} />
+  
+  <Route path="/" element={isAuthenticated() && ['finance'].includes(userRole) ? <Dashboard /> : <Navigate to="/login" />} />
+  <Route path="/chat/" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <Chat socket={socket} /> : <Navigate to="/login" />} />
+  <Route path="/updateprofile/" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <EditProfile /> : <Navigate to="/login" />} />
+  <Route path="/gantt/" element={isAuthenticated() && ['manager', 'employee'].includes(userRole) ? <GanttComponent /> : <Navigate to="/login" />} />
+  <Route path="/invoice/" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <TestInvoice /> : <Navigate to="/login" />} />
+  <Route path="/kanban/" element={isAuthenticated() && ['manager', 'employee'].includes(userRole) ? <Kanban /> : <Navigate to="/login" />} />
+  <Route path="/users" element={isAuthenticated() && ['admin'].includes(userRole) ? <Team /> : <Navigate to="/login" />} />
+  <Route path="/adduser" element={isAuthenticated() && ['admin'].includes(userRole) ? <AddUser /> : <Navigate to="/login" />} />
+  <Route path="/user/:id" element={isAuthenticated() && ['admin'].includes(userRole) ? <EditUser /> : <Navigate to="/login" />} />
+  <Route path="/invoices" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <Invoices /> : <Navigate to="/login" />} />
+  <Route path="/form" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <Form /> : <Navigate to="/login" />} />
+  <Route path="/bar" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <Bar /> : <Navigate to="/login" />} />
+  <Route path="/pie" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <Pie /> : <Navigate to="/login" />} />
+  <Route path="/line" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <Line /> : <Navigate to="/login" />} />
+  <Route path="/calendar" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <Calendar /> : <Navigate to="/login" />} />
+  <Route path="/geography" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <Geography /> : <Navigate to="/login" />} />
+  <Route path="/customer" element={isAuthenticated() && ['finance'].includes(userRole) ? <Customer /> : <Navigate to="/login" />} />
+  <Route path="/addcustomer" element={isAuthenticated() && ['finance'].includes(userRole) ? <AddCustomer /> : <Navigate to="/login" />} />
+  <Route path="/customer/:id" element={isAuthenticated() && ['finance'].includes(userRole) ? <EditCustomer /> : <Navigate to="/login" />} />
+  <Route path="/contacts" element={isAuthenticated() && ['admin'].includes(userRole) ? <Contacts /> : <Navigate to="/login" />} />
+  <Route path="/addcontact" element={isAuthenticated() && ['admin'].includes(userRole) ? <AddContact /> : <Navigate to="/login" />} />
+  <Route path="/contact/:id" element={isAuthenticated() && ['admin'].includes(userRole) ? <EditContact /> : <Navigate to="/login" />} />
+  <Route path="/payment" element={isAuthenticated() && ['finance'].includes(userRole) ? <Payment /> : <Navigate to="/login" />} />
+  <Route path="/addpayment" element={isAuthenticated() && ['finance'].includes(userRole) ? <AddPayment /> : <Navigate to="/login" />} />
+  <Route path="/payment/:id" element={isAuthenticated() && ['finance'].includes(userRole) ? <EditPayement /> : <Navigate to="/login" />} />
+  <Route path="/earningreports" element={isAuthenticated() && ['finance'].includes(userRole) ? <EarningReports /> : <Navigate to="/login" />} />
+  <Route path="/vendor" element={isAuthenticated() && ['finance'].includes(userRole) ? <Vendor /> : <Navigate to="/login" />} />
+  <Route path="/addvendor" element={isAuthenticated() && ['finance'].includes(userRole) ? <AddVendor /> : <Navigate to="/login" />} />
+  <Route path="/vendor/:id" element={isAuthenticated() && ['finance'].includes(userRole) ? <EditVendor /> : <Navigate to="/login" />} />
+  <Route path="/projects" element={isAuthenticated() && ['manager'].includes(userRole) ? <Project /> : <Navigate to="/login" />} />
+  <Route path="/addproject" element={isAuthenticated() && ['manager'].includes(userRole) ? <AddProject /> : <Navigate to="/login" />} />
+  <Route path="/project/:id" element={isAuthenticated() && ['manager'].includes(userRole) ? <EditProject /> : <Navigate to="/login" />} />
+  <Route path="/invoice" element={isAuthenticated() && ['admin', 'manager', 'employee', 'finance'].includes(userRole) ? <TestInvoice /> : <Navigate to="/login" />} />
+</Routes>
 
-              <Route path="/projects" element={<Project />} />
-              <Route path="/addproject" element={<AddProject />} />
-              <Route path="/project/:id" element={<EditProject />} />
-              <Route path="/form4" element={<Geography />} />
-              {/* <Route path="/home" element={<Home />} /> */}
-            
-            </Routes>
           </main>
         </div>
       </ThemeProvider>

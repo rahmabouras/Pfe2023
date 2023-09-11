@@ -13,7 +13,15 @@ const getIssues = async (req, res) => {
 const getIssueById = async (req, res) => {
   try {
     const { id } = req.params;
-    const issue = await Issue.findById(id);
+    
+    const issue = await Issue.findById(id)
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'userId',
+          select: '_id firstName lastName'
+        }
+      });
     
     if (!issue) {
       return res.status(404).json({ error: 'Issue not found' });
@@ -24,6 +32,7 @@ const getIssueById = async (req, res) => {
     res.status(500).json({ error: 'Internal server error' });
   }
 };
+
 
 const AutoIncrement = require('../models/AutoIncrement');
 // Get the next sequence number
@@ -40,7 +49,7 @@ const createIssue = async (req, res) => {
   try {
     const id = await getNextSequence('issue');
     const _id = id;
-    const { title, type, status, priority, listPosition, description, estimate, timeSpent, reporterId, projectId, userIds } = req.body;
+    const { title, type, status, priority, listPosition, description, estimate, timeSpent, reporterId, projectId, userIds, start, end } = req.body;
 
     // Create the new Issue
     const newIssue = new Issue({
@@ -55,7 +64,9 @@ const createIssue = async (req, res) => {
       timeSpent,
       reporterId,
       projectId,
-      userIds
+      userIds,
+      start,
+      end
     });
 
     // Save the new Issue

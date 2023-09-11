@@ -1,3 +1,5 @@
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
 const User = require('../models/User');
 
 // Get all users
@@ -37,9 +39,49 @@ const getNextSequence = async (name) => {
 // Create a new user
 exports.createUser = async (req, res) => {
   try {
+    // Get token from header
+//    const token = req.headers.authorization.split(" ")[1];
+
+    // Verify the token
+    // jwt.verify(token, process.env.JWT_SECRET, async (err, decodedToken) => {
+    //   if (err) {
+    //     return res.status(401).json({ error: 'Unauthorized' });
+    //   }
+
+    //   // Check if the role is 'admin'
+    //   if (decodedToken.role !== 'admin') {
+    //     return res.status(403).json({ error: 'Forbidden: Only admin can create users' });
+    //   }
+
+    //   const id = await getNextSequence('user');
+    //   const { password } = req.body;
+
+    //   // Hashing the password
+    //   const salt = await bcrypt.genSalt(10);
+    //   const hashedPassword = await bcrypt.hash(password, salt);
+
+    //   const newUser = await User.create({
+    //     _id: id,
+    //     ...req.body,
+    //     password: hashedPassword // Storing the hashed password
+    //   });
+
+    //   res.status(201).json(newUser);
+    // });
     const id = await getNextSequence('user');
-    const newUser = await User.create({ _id: id, ...req.body });
-    res.status(201).json(newUser);
+      const { password } = req.body;
+
+      // Hashing the password
+      const salt = await bcrypt.genSalt(10);
+      const hashedPassword = await bcrypt.hash(password, salt);
+
+      const newUser = await User.create({
+        _id: id,
+        ...req.body,
+        password: hashedPassword // Storing the hashed password
+      });
+
+      res.status(201).json(newUser);
   } catch (error) {
     res.status(500).json({ error: 'Error creating user', message: error.message });
   }
@@ -48,15 +90,27 @@ exports.createUser = async (req, res) => {
 // Update a user by ID
 exports.updateUser = async (req, res) => {
   try {
-    const updatedUser = await User.findByIdAndUpdate(req.params.id, req.body, { new: true });
+    let updateData = req.body;
+    
+    // Check if the password is being updated
+    if (updateData.password) {
+      const salt = await bcrypt.genSalt(10);
+      updateData.password = await bcrypt.hash(updateData.password, salt);
+    }
+
+    const updatedUser = await User.findByIdAndUpdate(req.params.id, updateData, { new: true });
+    
     if (!updatedUser) {
       return res.status(404).json({ error: 'User not found' });
     }
+    
     res.status(200).json(updatedUser);
+    
   } catch (error) {
-    res.status(500).json({ error: 'Error updating user' });
+    res.status(500).json({ error: 'Error updating user', message: error.message });
   }
 };
+
 
 // Delete a user by ID
 exports.deleteUser = async (req, res) => {

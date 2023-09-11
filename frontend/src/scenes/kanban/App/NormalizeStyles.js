@@ -9,7 +9,9 @@ export default createGlobalStyle`
   }
   body {
     margin: 0;
+    color: #000; !important;
   }
+
   main {
     display: block;
   }

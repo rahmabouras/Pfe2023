@@ -6,10 +6,21 @@ const uuid = require("uuid");
 const cors = require("cors");
 const { Server } = require("socket.io");
 const multer = require("multer");
-const mongoose = require("mongoose");
+const connectDB = require('./db');
+const jwt = require('jsonwebtoken');
+const bcrypt = require('bcryptjs');
+const User = require('./models/User');
+const Message = require('./models/Message');
+
+require('dotenv').config();
+const jwtSecret = process.env.JWT_SECRET;
+if (!process.env.JWT_SECRET) {
+  throw new Error('JWT_SECRET is not defined.');
+}
 
 // Initialize Express App
 const app = express();
+
 
 // Middlewares
 app.use(bodyParser.json());
@@ -27,37 +38,23 @@ const io = new Server(server, {
   }
 });
 
+
 // MongoDB connection
-mongoose.connect('mongodb://localhost:27017/project_management_system', {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-}).then(() => {
-  console.log('Connected to MongoDB');
-}).catch(err => {
-  console.error('Connection error', err);
-});
+const mongoUri = process.env.MONGODB_URI || 'mongodb://localhost:27017/project_management_system';
+connectDB(mongoUri);
 
 
-// Import the models
-const Customer = require('./models/Customer');
-const Vendor = require('./models/Vendor');
-const User = require('./models/User');
-const Message = require('./models/Message');
-const Conversation = require('./models/Conversation');
-const Project = require('./models/Project');
-const Issue = require('./models/Issue');
-const Payment = require('./models/Payment');
-const Contact = require('./models/Contact');
-const Event = require('./models/Event');
+
+
+
 
 // Define routes for each schema
 const customerRoutes = require('./routes/customerRoutes');
 const vendorRoutes = require('./routes/vendorRoutes');
 const userRoutes = require('./routes/userRoutes');
-const messageRoutes = require('./routes/messageRoutes');
-const conversationRoutes = require('./routes/conversationRoutes');
 const projectRoutes = require('./routes/projectRoutes');
 const issueRoutes = require('./routes/issueRoutes');
+const commentRoutes = require('./routes/commentRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const contactRoutes = require('./routes/contactRoutes');
 const eventRoutes = require('./routes/eventRoutes');
@@ -65,10 +62,9 @@ const eventRoutes = require('./routes/eventRoutes');
 app.use('/api/customers', customerRoutes);
 app.use('/api/vendors', vendorRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/messages', messageRoutes);
-app.use('/api/conversations', conversationRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/issues', issueRoutes);
+app.use('/api/comments', commentRoutes);
 app.use('/api/payments', paymentRoutes);
 app.use('/api/contacts', contactRoutes);
 app.use('/api/events', eventRoutes);
@@ -174,6 +170,7 @@ io.on("connection", (socket) => {
       .catch(err => console.error('Error saving message', err));
   
     socket.to(data.room).emit("receive_message", data);
+    io.emit("receive_notif", data);
   });
   
   
@@ -183,7 +180,44 @@ io.on("connection", (socket) => {
   });
 });
 
+
+
+app.post('/api/login', async function(req, res) {
+  const { email, password } = req.body;
+  
+  // Find user by email
+  const user = await User.findOne({ email });
+
+  // User not found
+  if (!user) {
+    return res.status(400).json({ msg: 'User not found' });
+  }
+
+  // Validate password
+  const isMatch = await bcrypt.compare(password, user.password);
+
+  if (!isMatch) {
+    return res.status(400).json({ msg: 'Invalid credentials' });
+  }
+
+  // Generate and return JWT
+  const payload = {
+    user: {
+      id: user.id,
+    },
+  };
+
+  jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: 3600 }, (err, token) => {
+    if (err) throw err;
+    res.json({ token: token , user: user });
+  });
+});
+
+
 // Server listener
 server.listen(5000, () => {
   console.log("Server running on port 5000");
 });
+
+
+module.exports = app;

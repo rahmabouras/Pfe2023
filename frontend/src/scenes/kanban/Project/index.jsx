@@ -52,7 +52,7 @@ useEffect(() => {
     console.log("Projects requested")
     console.log(response.data);
   }
-
+  
   getProjectList()
 }, []);
 
@@ -94,7 +94,7 @@ const handleProjectChange = (event) => {
                 <MenuItem key={project._id} value={project._id}>{project.projectName}</MenuItem>
                 )}
               </TextField>
-    { data &&
+    { project &&
       <Board
         project={project}
         fetchProject={fetchProject}
